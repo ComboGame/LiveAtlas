@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import {defineComponent, onMounted, reactive, ref, computed, onUnmounted, watch} from 'vue';
-import debounce from 'lodash.debounce';
+import {debounce} from "@/util/debounce";
 import {LiveAtlasMarkerSet, LiveAtlasMarker} from "@/index";
 import {DynmapMarkerUpdate} from "@/dynmap";
 import {useStore} from "@/store";

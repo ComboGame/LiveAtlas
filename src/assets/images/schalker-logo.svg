@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="176 176 528 528">
+	<path data-block="arch" fill="#F44E8A" d="M201 255H679Q697 255 697 273V539Q697 549 687 549H588Q578 549 578 539V448Q578 420 550 420H330Q302 420 302 448V539Q302 549 292 549H193Q183 549 183 539V273Q183 255 201 255Z"/>
+	<rect data-block="top" fill="#FD70A9" x="259" y="184" width="361" height="155" rx="18"/>
+	<path data-block="base" fill="#F32A80" d="M206 589H673Q679 589 679 595V675Q679 697 657 697H222Q200 697 200 675V595Q200 589 206 589Z"/>
+	<rect data-block="core" fill="#F6588F" x="342" y="460" width="195" height="168" rx="16"/>
+</svg>

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import {playSplashOutro, playUIEntrance, resetSplash} from "@/util/motion";
+
+let firstHide = true,
+	hiding = false;
+
 const app = document.getElementById('app'),
 	splash = document.getElementById('splash'),
 	splashSpinner = document.getElementById('splash__spinner'),
@@ -44,6 +49,8 @@ export const showSplash = function(reset: boolean) {
 		}
 	}
 
+	hiding = false;
+	resetSplash(splash);
 	splash.hidden = false;
 	app.setAttribute('aria-hidden', 'true');
 
@@ -54,19 +61,32 @@ export const showSplash = function(reset: boolean) {
 
 /**
  * Hides the LiveAtlas splash screen, if it is visible
- * The splash screen is not fully hidden immediately, as it has a CSS defined fade out animation
+ * The splash screen is not hidden immediately: the map is revealed with an animation (see {@link playSplashOutro}),
+ * and on the first load the map UI then animates in
  */
 export const hideSplash = () => {
-	if(!splash || !app) {
+	if(!splash || !app || splash.hidden || hiding) {
 		return;
 	}
 
-	requestAnimationFrame(() => {
-		splash.style.opacity = '0';
-		app.removeAttribute('aria-hidden');
+	hiding = true;
+	app.removeAttribute('aria-hidden');
 
-		if(window.getComputedStyle(splash).opacity === '0') {
-			splash.hidden = true;
+	const entrance = firstHide;
+	firstHide = false;
+
+	playSplashOutro(splash).then(() => {
+		// showSplash() was called while the outro was playing
+		if(!hiding) {
+			return;
+		}
+
+		hiding = false;
+		splash.hidden = true;
+		resetSplash(splash);
+
+		if(entrance) {
+			playUIEntrance();
 		}
 	});
 };

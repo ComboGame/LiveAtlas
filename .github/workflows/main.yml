@@ -1,7 +1,6 @@
 name: Build
 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
   pull_request:
@@ -15,20 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: echo VITE_APP_VERSION=git-${GITHUB_SHA::6} > .env
-      - run: cat .env
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      #- run: chmod +x .yarn/unplugged/esbuild-npm-0.14.54-b3dcd8a41e/node_modules/esbuild/lib/pnpapi-esbuild-linux-64-esbuild
-      - run: yarn set version stable
-      - run: yarn install
-      - run: yarn build
-      - run: find dist/live-atlas/assets -type f -iname \*.svg -delete
+          node-version: '24'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npx vitest run
+      - run: npm run build
       - run: cp LICENSE.md dist
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           name: 'live-atlas'
           path: 'dist/'

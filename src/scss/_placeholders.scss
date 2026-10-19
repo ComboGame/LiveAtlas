@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import "mixins";
+@use "mixins" as *;
 
 %button {
 	@include button;
@@ -46,12 +46,11 @@
 }
 
 %panel {
-	background-color: var(--background-base);
+	@include glass;
 	color: var(--text-base);
 	border-radius: var(--border-radius);
-	box-shadow: var(--box-shadow);
 	display: flex;
 	flex-direction: column;
-	padding: 1.5rem;
+	padding: 1.6rem;
 	position: relative;
 }

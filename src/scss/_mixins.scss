@@ -21,20 +21,29 @@
 	}
 }
 
+/* Стекло как у шапки schalker.net: полупрозрачный фон + размытие того, что под элементом */
+@mixin glass {
+	background-color: var(--background-base);
+	-webkit-backdrop-filter: var(--glass-filter);
+	backdrop-filter: var(--glass-filter);
+	box-shadow: var(--box-shadow);
+}
+
 @mixin button {
 	appearance: none;
 	box-shadow: none;
 	background-color: var(--background-base);
 	color: var(--text-base);
-	border-radius: var(--border-radius);
+	border-radius: var(--border-radius-small);
 	border: none;
 	cursor: pointer;
 	display: block;
 	text-align: center;
 	position: relative;
-	transition: color 0.2s ease-in, background-color 0.2s ease-in;
-	font-size: 1.6rem;
-	font-family: Raleway, sans-serif;
+	transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+	font-size: 1.5rem;
+	font-family: var(--font-body);
+	font-weight: 500;
 	box-sizing: border-box;
 	text-shadow: var(--text-shadow);
 	user-select: none;
@@ -50,8 +59,8 @@
 
 		&:only-child {
 			position: absolute;
-			width: calc(100% - 1.6rem);
-			height: calc(100% - 1.6rem);
+			width: calc(100% - 2.6rem);
+			height: calc(100% - 2.6rem);
 			min-width: 1.5rem;
 			min-height: 1.5rem;
 			top: 0;
@@ -78,14 +87,15 @@
 @mixin button-pressed {
 	background-color: var(--background-selected);
 	color: var(--text-selected);
-	font-weight: 700;
+	box-shadow: inset 0 0 0 1px rgba(244, 77, 137, 0.35);
+	font-weight: 600;
 	text-shadow: none;
 }
 
 @mixin button-focused {
-	outline: var(--outline-focus) solid 0.3rem !important;
+	outline: var(--outline-focus) solid 0.2rem !important;
+	outline-offset: 0.2rem;
 	z-index: 1;
-	border-color: var(--background-dark);
 }
 
 @mixin button-active {

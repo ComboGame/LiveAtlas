@@ -127,7 +127,7 @@
 </script>
 
 <style lang="scss">
-	@import '../scss/placeholders';
+	@use '../scss/placeholders' as *;
 
 	.chat {
 		@extend %panel;
@@ -136,9 +136,10 @@
 		left: calc((var(--ui-element-spacing) * 2) + var(--ui-button-size));
 		width: 50rem;
 		max-width: calc(100% - 8rem);
-		max-height: 20rem;
+		max-height: 22rem;
 		display: flex;
 		box-sizing: border-box;
+		overflow: hidden;
 
 		.chat__messages {
 			display: flex;
@@ -149,15 +150,15 @@
 			padding: 0;
 
 			.message {
-				font-size: 1.6rem;
-				line-height: 1.9rem;
+				font-size: 1.5rem;
+				line-height: 2rem;
+				color: var(--text-base);
 
 				& + .message {
-					margin-bottom: 0.5rem
+					margin-bottom: 0.6rem
 				}
 
 				&.message--skeleton {
-					font-style: italic;
 					color: var(--text-subtle);
 				}
 			}
@@ -167,38 +168,50 @@
 			display: flex;
 			flex-wrap: wrap;
 			align-items: stretch;
-			margin: 1.5rem -1.5rem -1.5rem;
+			gap: 0.8rem;
+			margin: 1.4rem -0.4rem -0.4rem;
 
 			.chat__input {
-				border-bottom-left-radius: var(--border-radius);
 				flex-grow: 1;
+				min-width: 0;
 			}
 
 			.chat__send {
-				padding-left: 1rem;
-				padding-right: 1rem;
-				border-radius: 0 0 var(--border-radius) 0;
+				padding-left: 1.6rem;
+				padding-right: 1.6rem;
+				background-color: var(--brand);
+				color: #fff;
+				font-weight: 600;
+
+				&:hover {
+					background-color: var(--brand-soft);
+				}
+
+				&[disabled] {
+					background-color: var(--background-disabled);
+					color: var(--text-disabled);
+				}
 			}
 
 			.chat__error {
 				background-color: var(--background-error);
-				color: var(--text-emphasis);
-				font-size: 1.6rem;
-				padding: 0.5rem 1rem;
+				box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.3);
+				color: #FCA5A5;
+				font-size: 1.4rem;
+				padding: 0.6rem 1.2rem;
 				line-height: 2rem;
 				width: 100%;
+				border-radius: var(--border-radius-small);
 			}
 		}
 
 		.chat__login {
-			font-size: 1.6rem;
-			padding: 1.2rem;
-			background-color: var(--background-light);
-			color: var(--text-subtle);
-			margin: 1.5rem -1.5rem -1.5rem;
+			font-size: 1.4rem;
+			padding: 1.2rem 1.6rem;
+			background-color: var(--background-hover);
+			color: var(--brand-soft);
+			margin: 1.4rem -0.4rem -0.4rem;
 			text-align: left;
-			border-top-left-radius: 0;
-			border-top-right-radius: 0;
 		}
 
 		@media (max-width: 400px), (max-height: 480px) {

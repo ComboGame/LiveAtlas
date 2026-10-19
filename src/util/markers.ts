@@ -138,7 +138,6 @@ const handlePendingUpdates = async () => {
 	}
 
 	if(pendingUpdates.value) {
-		// eslint-disable-next-line no-unused-vars
 		updateFrame = requestAnimationFrame(() => handlePendingUpdates());
 	} else {
 		updateFrame = 0;

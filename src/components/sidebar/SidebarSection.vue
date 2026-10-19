@@ -18,7 +18,7 @@
 	<section :class="{
 		'sidebar__section': true,
 		'section--collapsible': collapsible,
-		'section--collapsed': collapsed
+		'section--collapsed': displayCollapsed
 	}" :data-section="name">
 		<h2 class="section__heading">
 			<button :id="`${name}-heading`" type="button"
@@ -27,22 +27,23 @@
 				<span>
 					<slot name="heading"></slot>
 				</span>
-				<SvgIcon v-if="collapsible" name="arrow"></SvgIcon>
+				<SvgIcon v-if="collapsible" name="arrow" :class="{'section__arrow--collapsed': collapsed}"></SvgIcon>
 			</button>
 		</h2>
-		<div :id="`${name}-content`" class="section__content" :aria-hidden="collapsed">
+		<div ref="content" :id="`${name}-content`" class="section__content" :aria-hidden="collapsed">
 			<slot></slot>
 		</div>
 	</section>
 </template>
 
 <script lang="ts">
-import {defineComponent, computed} from "vue";
+import {defineComponent, computed, nextTick, ref, watch} from "vue";
 import {LiveAtlasSidebarSection} from "@/index";
 import {useStore} from "@/store";
 import SvgIcon from "@/components/SvgIcon.vue";
 import '@/assets/icons/arrow.svg';
 import {MutationTypes} from "@/store/mutation-types";
+import {animateCollapse} from "@/util/motion";
 
 export default defineComponent({
 	name: 'SidebarSection',
@@ -63,7 +64,30 @@ export default defineComponent({
 		const store = useStore(),
 			title = computed(() => store.state.messages.toggleTitle),
 			collapsed = computed(() => store.state.ui.sidebar[props.name].collapsed),
-			smallScreen = computed(() => store.state.ui.smallScreen);
+			smallScreen = computed(() => store.state.ui.smallScreen),
+			content = ref<HTMLElement | null>(null),
+
+			//Collapsed state applied to the DOM, which lags behind the store while the collapse animation plays
+			displayCollapsed = ref(collapsed.value);
+
+		watch(collapsed, async (value) => {
+			if(!content.value) {
+				displayCollapsed.value = value;
+				return;
+			}
+
+			if(value) {
+				await animateCollapse(content.value, true);
+
+				if(collapsed.value) {
+					displayCollapsed.value = true;
+				}
+			} else {
+				displayCollapsed.value = false;
+				await nextTick();
+				await animateCollapse(content.value, false);
+			}
+		});
 
 		const toggle = () => {
 			if(!props.collapsible) {
@@ -75,7 +99,9 @@ export default defineComponent({
 
 		return {
 			title,
+			content,
 			collapsed,
+			displayCollapsed,
 			smallScreen,
 			toggle,
 		}
@@ -84,15 +110,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-	@import '../../scss/placeholders';
+	@use '../../scss/placeholders' as *;
 
 	.sidebar__section {
 		@extend %panel;
 		margin-bottom: var(--ui-element-spacing);
 		box-sizing: border-box;
 		width: 100%;
-		max-width: 26rem;
+		max-width: 28rem;
 		flex: 0 0 auto;
+		padding: 1.4rem;
 
 		&[hidden] {
 			display: none;
@@ -105,13 +132,15 @@ export default defineComponent({
 			align-items: center;
 			position: sticky;
 			top: -0.2rem;
-			background-color: inherit;
 			z-index: 3;
 			border-radius: inherit;
-			margin: -1.5rem -1.5rem 0;
+			margin: -1.4rem -1.4rem 0;
+			background-color: rgba(20, 20, 24, 0.6);
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
 
 			&, button {
-				padding: 1.5rem;
+				padding: 1.4rem;
 			}
 
 			button {
@@ -119,32 +148,50 @@ export default defineComponent({
 				white-space: nowrap;
 				overflow: hidden;
 				display: flex;
-				font-size: 2rem;
+				font-family: var(--font-heading);
+				font-size: 1.7rem;
+				font-weight: 700;
+				letter-spacing: -0.01em;
 				background-color: transparent;
-				font-weight: 400;
-				color: inherit;
-				width: calc(100% + 3rem);
+				color: var(--text-emphasis);
+				width: calc(100% + 2.8rem);
 				align-items: center;
 				text-shadow: var(--text-shadow);
-				padding: 1rem 1.5rem;
+				padding: 1.2rem 1.6rem;
 				line-height: 1.5;
-				margin: -1.5rem;
+				margin: -1.4rem;
+				border-radius: inherit;
+
+				&:hover {
+					background-color: rgba(255, 255, 255, 0.03);
+				}
 
 				.svg-icon {
 					margin-left: auto;
-					width: 1.5rem;
-					height: 1.5rem;
+					width: 1.2rem;
+					height: 1.2rem;
+					color: var(--text-subtle);
+					transform: rotate(180deg);
+					transition: transform 0.3s cubic-bezier(.34, 1.56, .64, 1), color 0.2s ease;
+
+					&.section__arrow--collapsed {
+						transform: none;
+					}
+				}
+
+				&:hover .svg-icon {
+					color: var(--brand-soft);
 				}
 			}
 
 			&:hover, &:focus-visible, &.focus-visible, &:active {
-				background-color: inherit;
+				background-color: rgba(20, 20, 24, 0.6);
 			}
 		}
 
 		.section__content {
 			padding: 0 0.5rem;
-			margin: 0 -.5rem 1rem;
+			margin: 0.4rem -.5rem 0;
 			min-width: 0;
 			position: relative;
 
@@ -154,14 +201,19 @@ export default defineComponent({
 		}
 
 		.section__search {
-			margin-bottom: 1.5rem;
-			padding: 0.5rem 1rem;
+			margin-bottom: 1.2rem;
+			padding: 0.9rem 1.2rem;
 			box-sizing: border-box;
 			width: 100%;
 			position: sticky;
-			top: 4.8rem;
+			top: 5rem;
 			z-index: 3;
-			box-shadow: 0 1.5rem 0.5em var(--background-base);
+			font-size: 1.4rem;
+			background-color: #18181B;
+
+			&:focus {
+				background-color: #18181B;
+			}
 
 			& + .section__skeleton {
 				margin-top: 0;
@@ -169,30 +221,20 @@ export default defineComponent({
 		}
 
 		.section__skeleton {
-			font-style: italic;
-			color: var(--text-disabled);
+			font-size: 1.4rem;
+			color: var(--text-subtle);
 			text-align: center;
 			align-self: center;
-			margin-top: 1rem;
+			margin: 0.6rem 0 0.4rem;
 		}
 
-		&.section--collapsible {
-			.section__heading .svg-icon {
-				transform: rotate(180deg);
+		&.section--collapsible.section--collapsed {
+			.section__heading, .section__heading button {
+				margin-bottom: -1.4rem;
 			}
 
-			&.section--collapsed {
-				.section__heading .svg-icon {
-					transform: none;
-				}
-
-				.section__heading, .section__heading button {
-					margin-bottom: -1.5rem;
-				}
-
-				.section__content {
-					display: none;
-				}
+			.section__content {
+				display: none;
 			}
 		}
 

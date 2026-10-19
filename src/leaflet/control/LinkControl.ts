@@ -18,9 +18,8 @@
  */
 
 import {Control, ControlOptions, DomUtil} from 'leaflet';
-import { toClipboard } from '@soerenmartius/vue3-clipboard';
 import {useStore} from "@/store";
-import {clipboardError, clipboardSuccess} from "@/util";
+import {copyWithNotification} from "@/util";
 import '@/assets/icons/link.svg';
 
 /**
@@ -36,9 +35,7 @@ export class LinkControl extends Control {
 	onAdd() {
 		const store = useStore(),
 			linkButton = DomUtil.create('button',
-				'leaflet-control-button leaflet-control-link') as HTMLButtonElement,
-			copySuccess = clipboardSuccess(store),
-			copyError = clipboardError(store);
+				'leaflet-control-button leaflet-control-link') as HTMLButtonElement;
 
 		linkButton.type = 'button';
 		linkButton.title = store.state.messages.linkTitle;
@@ -49,9 +46,7 @@ export class LinkControl extends Control {
 
 		linkButton.addEventListener('click', e => {
 			e.preventDefault();
-			toClipboard(window.location.href.split("#")[0] + store.getters.url)
-				.then(copySuccess)
-				.catch(copyError)
+			copyWithNotification(store, window.location.href.split("#")[0] + store.getters.url);
 		});
 
 		return linkButton;

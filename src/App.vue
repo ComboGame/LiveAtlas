@@ -19,7 +19,8 @@
 	<ChatBox v-if="chatBoxEnabled" v-show="chatBoxEnabled && chatVisible"></ChatBox>
 	<LoginModal v-if="loginEnabled" v-show="loginModalVisible" :required="loginRequired"></LoginModal>
 	<Sidebar></Sidebar>
-	<notifications position="bottom center" :speed="250" :max="3" :ignoreDuplicates="true" classes="notification" />
+	<notifications position="bottom center" :speed="250" :max="3" :ignoreDuplicates="true" classes="notification"
+                 animation-type="velocity" :animation="notificationAnimation" />
 </template>
 
 <script lang="ts">
@@ -66,6 +67,9 @@ export default defineComponent({
 			//Allows switching servers without the modal overlapping
 			loginModalVisible = computed(() => store.state.ui.visibleModal === 'login'
 				&& (!loginRequired.value || !store.state.ui.visibleElements.has('maps'))),
+
+			// Анимация уведомлений выполняется Anime.js (см. notificationAnimator в util/motion)
+			notificationAnimation = {enter: () => 'enter', leave: () => 'leave'},
 
 			loading = ref(false),
 			loadingAttempts = ref(0),
@@ -225,6 +229,7 @@ export default defineComponent({
 		});
 
 		return {
+			notificationAnimation,
 			chatBoxEnabled,
 			chatVisible,
 			loginEnabled,

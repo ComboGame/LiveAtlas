@@ -60,6 +60,8 @@
 							} else {
 								return store.state.messages.chatAnonymousQuit;
 							}
+						default:
+							return '';
 					}
 				})
 

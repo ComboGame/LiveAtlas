@@ -103,7 +103,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-	@import '../../scss/mixins';
+	@use '../../scss/mixins' as *;
 
 	.player {
 		display: flex !important;
@@ -113,7 +113,9 @@ export default defineComponent({
 			position: relative;
 			pointer-events: none;
 			z-index: 2;
-			padding-right: 1.5rem;
+			margin-right: 1.2rem;
+			border-radius: 0.4rem;
+			box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 		}
 
 		&.player--hidden:not(:hover),

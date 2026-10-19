@@ -16,10 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import "mixins";
-@import "placeholders";
-@import "notifications";
-@import "leaflet";
+@use "fonts";
+@use "mixins" as *;
+@use "placeholders" as *;
+@use "notifications";
+@use "leaflet";
 
 @keyframes spin {
 	0% {
@@ -31,26 +32,55 @@
 	}
 }
 
+@keyframes live-pulse {
+	0% {
+		box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+	}
+
+	70% {
+		box-shadow: 0 0 0 0.7rem rgba(16, 185, 129, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+	}
+}
+
+/* Пиксельный шрифт сайта (OFL, см. assets/fonts/monocraft-OFL.txt) — для координат и технических значений */
 @font-face {
-	font-family: 'Raleway';
+	font-family: 'Monocraft';
 	font-style: normal;
-	font-weight: 100 900;
+	font-weight: 400;
 	font-display: swap;
-	src: url(../assets/fonts/Raleway-VariableFont_wght.ttf) format("opentype-variations");
+	src: url('@/assets/fonts/monocraft-cyrillic.woff2') format('woff2');
+}
+
+/* modern-normalize 3 включает border-box для всех элементов; разметка LiveAtlas рассчитана на content-box */
+*,
+::before,
+::after {
+	box-sizing: content-box;
+}
+
+body {
+	font-family: var(--font-body);
+	line-height: normal;
 }
 
 :root {
 	--ui-button-size: 5rem;
-	--ui-element-spacing: 1rem;
+	--ui-element-spacing: 1.2rem;
 
 	@media (max-width: 400px), (max-height: 480px) {
 		--ui-button-size: 4.4rem;
-		--ui-element-spacing: 0.7rem;
+		--ui-element-spacing: 0.8rem;
 	}
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-weight: 400;
+	font-family: var(--font-heading);
+	font-weight: 700;
+	letter-spacing: -0.01em;
 	margin-top: 0;
 	color: var(--text-emphasis);
 }
@@ -66,7 +96,14 @@ h2 {
 }
 
 a {
-	color: var(--text-base);
+	color: var(--brand-soft);
+	text-decoration-color: rgba(255, 103, 179, 0.4);
+	text-underline-offset: 0.3rem;
+	transition: color 0.2s ease;
+
+	&:hover {
+		color: var(--brand-light);
+	}
 }
 
 button, [type=button] {
@@ -75,17 +112,29 @@ button, [type=button] {
 
 input {
 	appearance: none;
-	background-color: var(--background-light);
-	box-shadow: none;
+	background-color: rgba(24, 24, 27, 0.6);
+	box-shadow: inset 0 0 0 1px #2B2B30;
 	color: var(--text-base);
-	font-size: 1.6rem;
-	padding: 1rem;
-	border: 0.2rem solid var(--border-color);
-	border-radius: 0.3rem;
+	font-family: var(--font-body);
+	font-size: 1.5rem;
+	padding: 1rem 1.2rem;
+	border: none;
+	border-radius: var(--border-radius-small);
+	transition: box-shadow 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+	&::placeholder {
+		color: var(--text-subtle);
+	}
+
+	&:hover {
+		box-shadow: inset 0 0 0 1px var(--border-strong);
+	}
 
 	&:focus {
 		color: var(--text-emphasis);
-		outline-color: var(--text-emphasis);
+		background-color: rgba(24, 24, 27, 0.85);
+		box-shadow: inset 0 0 0 1px rgba(244, 77, 137, 0.55), 0 0 0 0.3rem rgba(244, 77, 137, 0.15);
+		outline: none !important;
 	}
 
 	@include focus-reset {
@@ -94,7 +143,7 @@ input {
 
 	&[disabled] {
 		background-color: var(--background-disabled);
-		border-color: var(--border-color);
+		box-shadow: inset 0 0 0 1px #2B2B30;
 		cursor: not-allowed;
 	}
 }
@@ -104,11 +153,11 @@ input {
 }
 
 :focus {
-	outline: var(--outline-focus) solid 0.3rem !important;
+	outline: var(--outline-focus) solid 0.2rem !important;
 }
 
 :focus-visible {
-	outline: var(--outline-focus) solid 0.3rem !important;
+	outline: var(--outline-focus) solid 0.2rem !important;
 }
 
 .checkbox {
@@ -128,40 +177,53 @@ input {
 
 	&:before {
 		content: '';
-		width: 2.2rem;
-		height: 2.2rem;
-		border: 0.2rem solid #cccccc;
-		border-radius: 0.3rem;
-		background-color: transparent;
+		width: 2rem;
+		height: 2rem;
+		border: 0.15rem solid var(--border-strong);
+		border-radius: 0.6rem;
+		background-color: rgba(24, 24, 27, 0.6);
 		box-sizing: border-box;
 		z-index: 0;
+		transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	&:hover:before {
+		border-color: #52525B;
+	}
+
+	&:has(input[type=checkbox]:checked):before {
+		background-color: var(--brand);
+		border-color: var(--brand);
+		box-shadow: 0 0 1.2rem var(--brand-glow);
 	}
 
 	input[type=checkbox] {
-		width: 2.4rem;
-		height: 2.4rem;
+		width: 2rem;
+		height: 2rem;
 		opacity: 0;
 		z-index: 2;
+		cursor: pointer;
 
 		&:checked {
 			& ~ span {
-				color: var(--text-base);
+				color: var(--text-emphasis);
 			}
 
 			& + svg {
 				opacity: 1;
+				transform: scale(1);
 			}
 		}
 
 		&:focus ~ span:after {
 			content: '';
-			outline: var(--outline-focus) solid 0.3rem;
+			outline: var(--outline-focus) solid 0.2rem;
 			position: absolute;
 			top: 0;
 			right: -0.5rem;
 			bottom: 0;
 			left: -0.5rem;
-			border-radius: 0.5rem;
+			border-radius: 0.8rem;
 		}
 
 		@include focus-reset {
@@ -172,8 +234,13 @@ input {
 	}
 
 	svg {
+		width: 1.2rem;
+		height: 1.2rem;
+		left: 0.4rem;
+		color: #fff;
 		opacity: 0;
-		transition: opacity 0.2s ease-in;
+		transform: scale(0.4);
+		transition: opacity 0.2s ease, transform 0.25s cubic-bezier(.34, 1.56, .64, 1);
 		z-index: 1;
 	}
 
@@ -184,6 +251,7 @@ input {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: block;
+		transition: color 0.2s ease;
 	}
 }
 
@@ -191,7 +259,7 @@ input {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	font-size: 1.6rem;
+	font-size: 1.5rem;
 	min-width: 0;
 
 	ul {
@@ -221,7 +289,7 @@ input {
 		& + label {
 			@include button;
 			background-color: transparent;
-			margin-bottom: 0.1rem;
+			margin-bottom: 0.2rem;
 		}
 
 		& + label:hover {
@@ -232,6 +300,19 @@ input {
 		&:checked + label {
 			@include button-pressed;
 			position: relative;
+
+			/* Розовая метка выбранного пункта, как активные вкладки на сайте */
+			&:after {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0.8rem;
+				bottom: 0.8rem;
+				width: 0.3rem;
+				border-radius: 0 0.3rem 0.3rem 0;
+				background-color: var(--brand);
+				box-shadow: 0 0 0.8rem var(--brand-glow);
+			}
 		}
 
 		&:focus + label {
@@ -257,12 +338,15 @@ input {
 		overflow: hidden;
 		white-space: nowrap;
 		text-align: left;
-		border-radius: 0.5rem;
+		border-radius: var(--border-radius-small);
 	}
 
 	& > button {
 		width: 100%;
 		text-align: center;
+		margin-top: 0.4rem;
+		background-color: var(--background-hover);
+		color: var(--text-emphasis);
 	}
 }
 
@@ -278,7 +362,7 @@ img {
     width: 15rem;
     height: 6rem;
     z-index: 50;
-	font-family: monospace;
+	font-family: var(--font-pixel);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -287,13 +371,13 @@ img {
 
 	.clock__time {
 		text-align: center;
-		font-size: 2rem;
+		font-size: 1.8rem;
 		line-height: 2rem;
 		margin-top: auto;
-		background-color: var(--background-base);
+		background-color: var(--background-solid);
 		z-index: 1;
-		padding: 0.1rem 0.1rem 0;
-		border-radius: 0.3rem;
+		padding: 0.2rem 0.6rem 0;
+		border-radius: 0.6rem;
 
 		&.night {
 			color: var(--text-night);
@@ -334,7 +418,8 @@ img {
 
 		.clock__time {
 			margin: 0;
-			font-size: 3rem;
+			font-size: 2.6rem;
+			background-color: transparent;
 		}
 	}
 
@@ -346,28 +431,164 @@ img {
 
 .form {
 	.form__group {
-		margin-bottom: 1.5rem;
+		margin-bottom: 1.6rem;
 		display: flex;
 		flex-direction: column;
 	}
 
 	.form__label {
-		font-size: 1.6rem;
-		margin-bottom: 0.5rem;
-		color: var(--text-emphasis);
+		font-size: 1.2rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		margin-bottom: 0.6rem;
+		color: var(--text-subtle);
+	}
+
+	button[type=submit] {
+		background-color: var(--brand);
+		color: #fff;
+		font-weight: 600;
+		padding: 1.1rem 1.6rem;
+		box-shadow: 0 10px 30px -12px var(--brand-glow);
+
+		&:hover {
+			background-color: var(--brand-soft);
+		}
+
+		&[disabled] {
+			background-color: var(--background-disabled);
+			color: var(--text-disabled);
+			box-shadow: none;
+		}
 	}
 
 	&.form--invalid input:invalid {
-		border-color: var(--border-error);
+		box-shadow: inset 0 0 0 1px var(--border-error);
 	}
 }
 
 .alert {
 	display: flex;
 	flex-direction: column;
-	padding: 1rem;
+	padding: 1rem 1.4rem;
+	color: #FCA5A5;
 	background-color: var(--background-error);
-	border-radius: var(--border-radius);
+	box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.3);
+	border-radius: var(--border-radius-small);
+}
+
+/* Плашка бренда (BrandControl) */
+.leaflet-control.leaflet-control-brand {
+	order: 0 !important;
+	margin-top: 0 !important;
+
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		height: var(--ui-button-size);
+		padding: 0 1.6rem 0 0.9rem;
+		box-sizing: border-box;
+		border-radius: inherit;
+		text-decoration: none;
+		text-align: left;
+		color: inherit;
+		background-color: transparent;
+		line-height: 1;
+	}
+
+	a.brand:hover {
+		background-color: var(--background-hover);
+	}
+
+	.brand__logo {
+		flex: 0 0 auto;
+		width: 3.2rem;
+		height: 3.2rem;
+		overflow: visible;
+		filter: drop-shadow(0 4px 12px rgba(244, 77, 137, 0.35));
+
+		[data-block] {
+			transform-box: fill-box;
+			transform-origin: center;
+		}
+	}
+
+	.brand__text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 0;
+	}
+
+	.brand__name {
+		font-family: var(--font-heading);
+		font-weight: 800;
+		font-size: 2.1rem;
+		letter-spacing: -0.02em;
+		color: var(--brand);
+	}
+
+	.brand__tagline {
+		font-size: 1.3rem;
+		font-weight: 500;
+		color: var(--brand-light);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 600px), (max-height: 480px) {
+		.brand {
+			justify-content: center;
+			width: var(--ui-button-size);
+			padding: 0;
+		}
+
+		.brand__text {
+			display: none;
+		}
+	}
+}
+
+/* «Пинг» точки, к которой переместилась карта (pingLocation в util/motion.ts) */
+.map-ping {
+	pointer-events: none;
+
+	.map-ping__ring,
+	.map-ping__dot {
+		position: absolute;
+		border-radius: 50%;
+		opacity: 0;
+	}
+
+	.map-ping__ring {
+		left: -1.6rem;
+		top: -1.6rem;
+		width: 3.2rem;
+		height: 3.2rem;
+		box-sizing: border-box;
+		border: 0.2rem solid var(--brand-soft);
+		box-shadow: 0 0 1.2rem var(--brand-glow), inset 0 0 1.2rem var(--brand-glow);
+	}
+
+	.map-ping__dot {
+		left: -0.6rem;
+		top: -0.6rem;
+		width: 1.2rem;
+		height: 1.2rem;
+		background-color: var(--brand);
+		box-shadow: 0 0 0 0.3rem rgba(255, 255, 255, 0.9), 0 0 1.6rem var(--brand);
+	}
+}
+
+/* Свечение при смене карты (playMapTransition) */
+.map-transition-glow {
+	position: absolute;
+	inset: 0;
+	z-index: 450;
+	pointer-events: none;
+	opacity: 0;
+	background: radial-gradient(45% 45% at 50% 50%, rgba(244, 77, 137, 0.3), transparent 70%);
 }
 
 @media print {

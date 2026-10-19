@@ -284,17 +284,17 @@ export default class OverviewerMapProvider extends MapProvider {
 		let markerSets: any = {}, markers: any = {}, result: any;
 
 		for(const file of files) {
-			let code = await OverviewerMapProvider.getText(`${this.config}${file[1]}`, this.markersAbort.signal);
+			const code = await OverviewerMapProvider.getText(`${this.config}${file[1]}`, this.markersAbort.signal);
 
 			switch(file[1]) {
 				//Contains list of marker sets per map in markers object
 				case 'markers.js':
-					markerSets = await runSandboxed(code += 'return markers || {};');
+					markerSets = await runSandboxed(code + 'return markers || {};');
 					break;
 
 				//Contains list of markers per marker set in markersDB object
 				case 'markersDB.js':
-					markers = await runSandboxed(code += 'return markersDB || {};');
+					markers = await runSandboxed(code + 'return markersDB || {};');
 					break;
 
 				//Additional files can add to either of the above objects

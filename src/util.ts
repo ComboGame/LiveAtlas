@@ -27,6 +27,7 @@ import {Store} from "@/store";
 import LiveAtlasMapDefinition from "@/model/LiveAtlasMapDefinition";
 import {globalMessages, serverMessages} from "../messages";
 import ConfigurationError from "@/errors/ConfigurationError";
+import {copyToClipboard} from "@/util/clipboard";
 
 const documentRange = document.createRange(),
 	brToSpaceRegex = /<br ?\/?>/g;
@@ -245,19 +246,27 @@ export const stripHTML = (text: string) => {
 }
 
 /**
- * Default success callback function for VueClipboard, will display a notification with the configured copy success
+ * Default success callback function for clipboard copies, will display a notification with the configured copy success
  * message
  */
-export const clipboardSuccess = (store: Store) => () => notify(store.state.messages.copyToClipboardSuccess);
+export const clipboardSuccess = (store: Store) => () => notify({ type: 'success', text: store.state.messages.copyToClipboardSuccess });
 
 /**
- * Default error callback function for VueClipboard, will display a notification with the configured copy error
+ * Default error callback function for clipboard copies, will display a notification with the configured copy error
  * message
  */
 export const clipboardError = (store: Store) => (e: Error) => {
 	notify({ type: 'error', text: store.state.messages.copyToClipboardError });
 	console.error('Error copying to clipboard', e);
 };
+
+/**
+ * Copies the given text to the clipboard, displaying a success or error notification afterwards
+ * @param {Store} store The store to take notification messages from
+ * @param {string} text The text to copy
+ */
+export const copyWithNotification = (store: Store, text: string) =>
+	copyToClipboard(text).then(clipboardSuccess(store)).catch(clipboardError(store));
 
 /**
  * Creates a {@link LiveAtlasMessageConfig} from the provided config object. The provided object will be checked for all

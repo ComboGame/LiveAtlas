@@ -117,9 +117,19 @@ export default defineComponent({
 			margin: auto;
 		}
 
+		.marker__label {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
 		.marker__location {
-			font-size: 1.4rem;
-			font-family: monospace;
+			display: block;
+			margin-top: 0.2rem;
+			font-size: 1.15rem;
+			font-family: var(--font-pixel);
+			font-weight: 400;
+			color: var(--text-subtle);
 		}
 	}
 </style>

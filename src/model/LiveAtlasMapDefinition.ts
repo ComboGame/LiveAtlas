@@ -142,7 +142,7 @@ export default class LiveAtlasMapDefinition implements LiveAtlasTileLayerOptions
 		const mapName = this.name.split(/[^a-zA-Z\d]/, 1)[0];
 
 		// list of map types, which have the same icon in every dimension
-		let fixMapTypes = ['biome'];
+		const fixMapTypes = ['biome'];
 		if (fixMapTypes.includes(mapName)) {
 			worldType = 'world';
 			mapType   = mapName;

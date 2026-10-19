@@ -21,6 +21,7 @@ import {BaseIconOptions, Icon, Layer, LayerOptions, Util} from 'leaflet';
 import {LiveAtlasPlayer, LiveAtlasPlayerImageSize} from "@/index";
 import {getImagePixelSize, getPlayerImage} from "@/util/images";
 import defaultImage from '@/assets/images/player_face.png';
+import {popInMarker} from "@/util/motion";
 
 const playerImage: HTMLImageElement = document.createElement('img');
 playerImage.src = defaultImage;
@@ -36,7 +37,6 @@ export interface PlayerIconOptions extends BaseIconOptions {
 
 export class PlayerIcon extends Layer implements Icon<PlayerIconOptions> {
 	declare options: PlayerIconOptions;
-	declare createShadow: (oldIcon?: HTMLElement) => HTMLElement;
 
 	private readonly _player: LiveAtlasPlayer;
 	private _container?: HTMLDivElement;
@@ -56,6 +56,11 @@ export class PlayerIcon extends Layer implements Icon<PlayerIconOptions> {
 		super(options as LayerOptions);
 		Util.setOptions(this, options);
 		this._player = player;
+	}
+
+	// Leaflet 1.9 always calls createShadow when adding a marker; LiveAtlas markers have no shadows
+	createShadow(): HTMLElement {
+		return null as unknown as HTMLElement;
 	}
 
 	createIcon() {
@@ -117,6 +122,7 @@ export class PlayerIcon extends Layer implements Icon<PlayerIconOptions> {
 
 		this._container.appendChild(this._playerInfo);
 		this.update();
+		popInMarker(this._playerInfo);
 
 		return this._container;
 	}

@@ -1,5 +1,37 @@
 # LiveAtlas [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![Discord](https://img.shields.io/discord/390942438061113344?color=8C9CFE&label=discord&logo=discord&logoColor=white)](https://discord.gg/DBduB9qyv3) [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/JLyne/LiveAtlas/main.yml?branch=master)](https://github.com/JLyne/LiveAtlas/actions)
 
+## Schalker
+
+Форк LiveAtlas для карты сервера [Schalker](https://schalker.net) (squaremap).
+
+- **Дизайн в стиле schalker.net**: тёмные стеклянные панели, розовый акцент `#F44D89`, шрифты Inter и Noto Sans, Monocraft для координат, русский интерфейс. Цвета и тексты меняются в `index.html` (`:root` и `messages`).
+- **Анимации на [Anime.js](https://animejs.com) v4** (`src/util/motion.ts`): логотип на заставке собирается из блоков, карта раскрывается «диафрагмой», интерфейс въезжает с краёв, разделы панели и меню появляются на пружинах, точка назначения подсвечивается «пингом», при смене мира тайлы проявляются из размытия. При `prefers-reduced-motion` или `ui.animations: false` анимации отключаются.
+- **Плашка бренда** в левом верхнем углу (`ui.brand` в `index.html`, `null` — скрыть).
+
+### Установка на сервер
+
+1. `npm ci && npm run build`
+2. Скопировать содержимое `dist/` в веб-папку squaremap (`plugins/squaremap/web/`), рядом с папкой `tiles/`.
+   В `plugins/squaremap/config.yml` выключить перезапись веб-файлов: `settings.web-directory.auto-update: false`.
+   Если карту раздаёт nginx, кладите `dist/` в корень сайта, где доступен `tiles/`.
+3. В `index.html` сервер настроен как `squaremap: window.location.pathname`, то есть LiveAtlas ищет `tiles/` по тому же пути, что и сама страница.
+
+Заголовки списков миров и игроков squaremap передаёт сам: `ui.sidebar.world_list_label` и `player_list_label`.
+
+### Разработка
+
+```bash
+npm install
+npm run dev        # dev-сервер на :8080
+npm test           # vitest
+npm run lint       # eslint
+npm run build      # проверка типов + сборка в dist/
+npm run build:plugin  # то же + сборка Spigot-плагина через Maven
+```
+
+---
+
+
 
 A map frontend built with [Vue.js](https://github.com/vuejs/vue) and Typescript. Supports [Dynmap](https://github.com/webbukkit/dynmap), [Squaremap](https://github.com/jpenilla/squaremap), [Pl3xmap](https://github.com/NeumimTo/Pl3xMap) and [Overviewer](https://github.com/overviewer/Minecraft-Overviewer).
 
@@ -36,7 +68,7 @@ The index.html file can be edited to add custom favicons, styles or analytics, j
 You are also free to build LiveAtlas yourself to make further changes.
 
 ## Building
-This repository uses [yarn zero-installs](https://yarnpkg.com/features/zero-installs), so all dependencies are provided without installing. You can run `yarn run serve` to start a local dev server, or `yarn run build` to build LiveAtlas.
+Run `npm install`, then `npm run dev` to start a local dev server, or `npm run build` to build LiveAtlas into `dist/`. `npm run build:plugin` additionally packages the Spigot plugin with Maven.
 
 ## Support
 If you find a bug, please create an issue with as must detail as possible. I'm working on this in my spare time, so fixes are on a best effort basis, but I'll eventually find time for them.

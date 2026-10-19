@@ -22,9 +22,7 @@
 			<PlayerImage v-if="imagesEnabled" :player="target" class="target__icon" width="48" height="48"></PlayerImage>
 			<span class="target__name" v-html="target.displayName"></span>
 			<span class="target__status">{{ status }}</span>
-      <span class="target__location" v-clipboard:copy="location"
-            v-clipboard:success="copySuccess"
-            v-clipboard:error="copyError">{{ location }}&#8288;</span>
+			<button type="button" class="target__location" @click="copyLocation">{{ location }}&#8288;</button>
 			<button class="target__unfollow" type="button" :title="messageUnfollowTitle"
 				@click.prevent="unfollow" :aria-label="messageUnfollow">
 				<SvgIcon name="cross"></SvgIcon>
@@ -38,7 +36,7 @@ import {computed, defineComponent} from "vue";
 import {LiveAtlasPlayer} from "@/index";
 import {useStore} from "@/store";
 import {MutationTypes} from "@/store/mutation-types";
-import {clipboardError, clipboardSuccess} from '@/util';
+import {copyWithNotification} from '@/util';
 import SvgIcon from "@/components/SvgIcon.vue";
 import "@/assets/icons/cross.svg";
 import PlayerImage from "@/components/PlayerImage.vue";
@@ -91,8 +89,7 @@ export default defineComponent({
 			messageHidden,
 			status,
 			location,
-			copySuccess: clipboardSuccess(store),
-			copyError: clipboardError(store),
+			copyLocation: () => location.value && copyWithNotification(store, location.value),
 		}
 	},
 });
@@ -106,6 +103,30 @@ export default defineComponent({
 		bottom: 0.2rem;
 		z-index: 3;
 
+		h2 {
+			font-size: 1.1rem;
+			line-height: 1;
+			font-family: var(--font-body);
+			font-weight: 600;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--text-subtle);
+			display: flex;
+			align-items: center;
+			gap: 0.8rem;
+			margin-bottom: 1.4rem;
+
+			/* Индикатор «в эфире» */
+			&:before {
+				content: '';
+				width: 0.8rem;
+				height: 0.8rem;
+				border-radius: 50%;
+				background-color: var(--state-ok);
+				animation: live-pulse 1.8s ease-out infinite;
+			}
+		}
+
 		.following__target {
 			display: grid;
 			grid-template-columns: min-content 1fr;
@@ -113,13 +134,26 @@ export default defineComponent({
 			grid-template-areas: "icon ." "icon name" "icon status" "icon location" "icon .";
 			grid-auto-flow: column;
 			align-items: center;
+			row-gap: 0.3rem;
 
 			.target__unfollow {
 				position: absolute;
-				top: 1.5rem;
-				right: 1rem;
-				width: 2.5rem;
-				height: 2.5rem;
+				top: 1.2rem;
+				right: 1.2rem;
+				width: 2.8rem;
+				height: 2.8rem;
+				border-radius: 50%;
+				background-color: var(--background-hover);
+
+				&:hover {
+					background-color: var(--brand);
+					color: #fff;
+				}
+
+				.svg-icon {
+					width: 1.1rem !important;
+					height: 1.1rem !important;
+				}
 
 				&:before {
 					content: '';
@@ -133,29 +167,49 @@ export default defineComponent({
 			}
 
 			.target__icon {
-				margin-right: 2rem;
+				margin-right: 1.4rem;
 				grid-area: icon;
+				border-radius: 1rem;
+				box-shadow: 0 0 0 0.2rem var(--brand), 0 0 2rem -0.4rem var(--brand-glow);
 			}
 
 			.target__name {
 				grid-area: name;
+				color: var(--text-emphasis);
+				font-weight: 600;
+				font-size: 1.6rem;
 			}
 
 			.target__status {
 				grid-area: status;
 				font-size: 1.3rem;
+				color: var(--text-subtle);
 			}
 
 			.target__location {
 				grid-area: location;
-				font-family: monospace;
+				font-family: var(--font-pixel);
+				font-size: 1.3rem;
+				font-weight: 400;
+				color: var(--brand-soft);
 				cursor: pointer;
+				text-align: left;
+				background-color: transparent;
+				padding: 0;
+				line-height: 1.6rem;
+				justify-self: start;
+
+				&:hover {
+					color: var(--brand-light);
+					background-color: transparent;
+				}
 			}
 
 			&.following__target--hidden {
 				.target__icon {
 					filter: grayscale(1);
 					opacity: 0.5;
+					box-shadow: 0 0 0 0.2rem var(--border-strong);
 				}
 			}
 

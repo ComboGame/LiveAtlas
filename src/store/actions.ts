@@ -121,7 +121,7 @@ export const actions: ActionTree<State, State> & Actions = {
 
 		// Use first world, if any, if neither of the above exist
 		if(!worldName) {
-			worldName = state.worlds.size ? state.worlds.entries().next().value[1].name : undefined;
+			worldName = state.worlds.size ? state.worlds.values().next().value?.name : undefined;
 		}
 
 		if(worldName) {
@@ -138,7 +138,7 @@ export const actions: ActionTree<State, State> & Actions = {
 			// Use first map, if any, if neither of the above exist
 			if(!mapName) {
 				const world = state.worlds.get(worldName) as LiveAtlasWorldDefinition;
-				mapName = world.maps.size ? world.maps.values().next().value.name : undefined;
+				mapName = world.maps.size ? world.maps.values().next().value?.name : undefined;
 			}
 		}
 

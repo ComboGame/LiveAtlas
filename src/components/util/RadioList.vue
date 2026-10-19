@@ -53,7 +53,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-	@import '../../scss/mixins';
+	@use '../../scss/mixins' as *;
 
 	fieldset {
 		appearance: none;

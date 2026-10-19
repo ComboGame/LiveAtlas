@@ -183,7 +183,6 @@ export class DynmapTileLayer extends LiveAtlasTileLayer {
 		}
 
 		if(this._pendingUpdates.value) {
-			// eslint-disable-next-line no-unused-vars
 			this._updateFrame = requestAnimationFrame(() => this.handlePendingUpdates());
 		} else {
 			this._updateFrame = 0;

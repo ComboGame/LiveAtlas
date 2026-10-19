@@ -14,45 +14,60 @@
  * limitations under the License.
  */
 
+@use "../mixins" as *;
+
 .leaflet-popup {
 	.leaflet-popup-content-wrapper, .leaflet-popup-tip {
-		background-color: var(--background-base);
+		@include glass;
+		background-color: rgba(22, 22, 26, 0.9);
 		color: var(--text-base);
-		box-shadow: var(--box-shadow);
 	}
 
 	.leaflet-popup-content-wrapper {
 		max-height: 50vh;
 		display: flex;
 		border-radius: var(--border-radius);
-		box-shadow: var(--box-shadow);
+	}
+
+	.leaflet-popup-tip {
+		box-shadow: none;
 	}
 
 	.leaflet-popup-content {
-		margin: 1rem;
+		margin: 1.2rem 1.6rem;
 		overflow: auto;
 		word-break: break-word;
+		font-size: 1.4rem;
+		line-height: 1.5;
 	}
 
 	&.leaflet-popup--chat {
 		.leaflet-popup-content {
-			margin: 0.5rem 1rem;
+			margin: 0.6rem 1.2rem;
 			display: flex;
 			flex-direction: column;
+			color: var(--text-emphasis);
 		}
 	}
 
 	@at-root  {
 		.leaflet-container a.leaflet-popup-close-button {
-			background-color: var(--background-base);
-			border-radius: var(--border-radius);
-			width: 2rem;
-			height: 2rem;
+			@include glass;
+			background-color: var(--background-solid);
+			color: var(--text-base);
+			border-radius: 50%;
+			width: 2.4rem;
+			height: 2.4rem;
 			top: -1rem;
 			right: -1rem;
 			text-align: center;
 			padding: 0;
-			line-height: 2rem;
+			font: 400 1.8rem/2.4rem var(--font-body);
+
+			&:hover {
+				color: var(--text-emphasis);
+				background-color: var(--brand);
+			}
 		}
 	}
 
@@ -60,4 +75,3 @@
 		display: none;
 	}
 }
-

@@ -75,7 +75,7 @@ export default abstract class MapProvider implements LiveAtlasMapProvider {
 				console.error(e);
 			}
 
-			throw new Error(`Network request failed`);
+			throw new Error(`Network request failed`, {cause: e});
 		}
 
 		if (!response.ok) {
@@ -113,7 +113,7 @@ export default abstract class MapProvider implements LiveAtlasMapProvider {
 				console.warn(`Request aborted (${url}`);
 				throw e;
 			} else {
-				throw new Error('Request returned invalid json');
+				throw new Error('Request returned invalid json', {cause: e});
 			}
 		}
 

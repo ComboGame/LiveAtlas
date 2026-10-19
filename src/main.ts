@@ -16,7 +16,6 @@
 
 import { createApp } from 'vue'
 import Notifications from '@kyvg/vue3-notification'
-import { VueClipboard } from '@soerenmartius/vue3-clipboard';
 import 'modern-normalize/modern-normalize.css';
 import 'leaflet/dist/leaflet.css';
 import '@/scss/style.scss';
@@ -32,17 +31,15 @@ import Pl3xmapMapProvider from "@/providers/Pl3xmapMapProvider";
 import {showSplashError} from "@/util/splash";
 import ConfigurationError from "@/errors/ConfigurationError";
 import OverviewerMapProvider from "@/providers/OverviewerMapProvider";
-import.meta.globEager('/assets/icons/*.svg');
+import {notificationAnimator, playSplashIntro} from "@/util/motion";
 
-const splash = document.getElementById('splash');
+const splashVersion = document.querySelector('#splash .splash__version');
 
-if(splash) {
-	splash.addEventListener('transitionend', e => {
-		if(e.target === splash && splash.style.opacity === '0') {
-			splash.hidden = true;
-		}
-	});
+if(splashVersion) {
+	splashVersion.textContent = `v${store.state.version}`;
 }
+
+playSplashIntro();
 
 console.info(`LiveAtlas version ${store.state.version} - https://github.com/JLyne/LiveAtlas`);
 
@@ -83,8 +80,7 @@ window.liveAtlasLoaded = true;
 
 		const app = createApp(App)
 			.use(store)
-			.use(Notifications)
-			.use(VueClipboard);
+			.use(Notifications, {velocity: notificationAnimator});
 
 		// app.config.performance = true;
 		app.mount('#app');

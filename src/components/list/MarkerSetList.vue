@@ -18,9 +18,9 @@
 	<RadioList ref="list" v-if="!currentSet" name="marker-set" :aria-labelledby="ariaLabelledby">
 		<template v-for="[id, markerSet] in markerSets" :key="id">
 			<input :id="`marker-set-${id}`" type="radio" name="marker-set" v-model="currentSet" v-bind:value="markerSet">
-			<label :for="`marker-set-${id}`">
-				<span>{{ markerSet.label || id }}</span>
-				<span>{{ markerCounts.get(markerSet) }} Marker(s)</span>
+			<label :for="`marker-set-${id}`" class="marker-set">
+				<span class="marker-set__label">{{ markerSet.label || id }}</span>
+				<span class="marker-set__count">{{ markerCounts.get(markerSet) }}</span>
 			</label>
 		</template>
 	</RadioList>
@@ -109,7 +109,9 @@ export default defineComponent({
 		}
 
 		watch(props.markerSets, () => checkSets());
-		watch(currentSet, (newValue, oldValue) => nextTick(() => updateFocus(newValue, oldValue)));
+		watch(currentSet, (newValue, oldValue) => {
+			nextTick(() => updateFocus(newValue, oldValue));
+		});
 
 		onMounted(() => {
 			checkSets();
@@ -132,12 +134,50 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+	.marker-set {
+		display: flex !important;
+		align-items: center;
+		gap: 1rem;
+
+		.marker-set__label {
+			flex: 1 1 auto;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.marker-set__count {
+			flex: 0 0 auto;
+			min-width: 2.4rem;
+			padding: 0.2rem 0.7rem;
+			border-radius: 2rem;
+			font-size: 1.2rem;
+			font-weight: 600;
+			text-align: center;
+			color: var(--text-subtle);
+			background-color: rgba(255, 255, 255, 0.06);
+		}
+	}
+
+	input:checked + .marker-set .marker-set__count {
+		color: var(--brand-light);
+		background-color: rgba(244, 77, 137, 0.2);
+	}
+
 	.markers__back {
 		width: 3.2rem;
 		height: 3.2rem;
 		flex-grow: 0;
+		flex-shrink: 0;
 		margin-right: 1rem;
 		transform: rotate(90deg);
+		border-radius: 50%;
+		background-color: var(--background-hover);
+
+		&:hover {
+			background-color: var(--brand);
+			color: #fff;
+		}
 	}
 
 	.markers__header {
@@ -145,8 +185,10 @@ export default defineComponent({
 		align-items: center;
 		padding-bottom: 1rem;
 		position: sticky;
-		top: 4.8rem;
-		background-color: var(--background-base);
+		top: 5rem;
+		background-color: rgba(20, 20, 24, 0.6);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
 		z-index: 3;
 	}
 
@@ -157,5 +199,7 @@ export default defineComponent({
 		text-overflow: ellipsis;
 		overflow: hidden;
 		margin: 0;
+		font-size: 1.5rem;
+		color: var(--brand-light);
 	}
 </style>

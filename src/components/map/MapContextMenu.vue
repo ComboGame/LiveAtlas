@@ -16,21 +16,14 @@
 
 <template>
 	<nav role="none" id="map-context-menu" ref="menuElement" :style="style" @keydown="handleKeydown">
-		<ul class="menu" role="menu">
+		<ul ref="menuList" class="menu" role="menu">
 			<li role="none">
 				<!--suppress HtmlUnknownAttribute -->
-				<button type="button" role="menuitem" v-clipboard:copy="locationCopy"
-                v-clipboard:success="copySuccess"
-                v-clipboard:error="copyError">{{ locationLabel }}
-				</button>
+				<button type="button" role="menuitem" class="context-menu__location" @click="copyLocation">{{ locationLabel }}</button>
 			</li>
 			<li role="none">
 				<!--suppress HtmlUnknownAttribute -->
-				<button type="button" role="menuitem"
-                v-clipboard:copy="url"
-                v-clipboard:success="copySuccess"
-                v-clipboard:error="copyError">{{ messageCopyLink }}
-				</button>
+				<button type="button" role="menuitem" @click="copyUrl">{{ messageCopyLink }}</button>
 			</li>
 			<li role="none">
 				<button type="button" role="menuitem" @click.prevent="pan">{{ messageCenterHere }}</button>
@@ -46,8 +39,9 @@ import {LeafletMouseEvent} from "leaflet";
 import {useStore} from "@/store";
 import LiveAtlasLeafletMap from "@/leaflet/LiveAtlasLeafletMap";
 import WorldListItem from "@/components/list/WorldListItem.vue";
-import {clipboardError, clipboardSuccess, getUrlForLocation} from "@/util";
+import {copyWithNotification, getUrlForLocation} from "@/util";
 import {handleKeyboardEvent} from "@/util/events";
+import {pingLocation, popIn} from "@/util/motion";
 
 export default defineComponent({
 	name: "MapContextMenu",
@@ -68,6 +62,7 @@ export default defineComponent({
 			messageCenterHere = computed(() => store.state.messages.contextMenuCenterHere),
 
 			menuElement = ref<HTMLInputElement | null>(null),
+			menuList = ref<HTMLElement | null>(null),
 			menuVisible = computed(() => !!event.value),
 
 			currentMap = computed(() => store.state.currentMap),
@@ -160,6 +155,7 @@ export default defineComponent({
 		const pan = () => {
 			if (event.value) {
 				props.leaflet.panTo(event.value.latlng);
+				pingLocation(props.leaflet, event.value.latlng);
 				props.leaflet.getContainer().focus();
 			}
 		}
@@ -167,7 +163,12 @@ export default defineComponent({
 		watch(event, value => {
 			if(value) {
 				props.leaflet.closePopup();
-				nextTick(() => menuElement.value && focusFirstItem());
+				nextTick(() => {
+					if(menuElement.value) {
+						focusFirstItem();
+						popIn(menuList.value, -6);
+					}
+				});
 			}
 		});
 
@@ -216,11 +217,12 @@ export default defineComponent({
 			messageCopyLink,
 			messageCenterHere,
 
-			copySuccess: clipboardSuccess(store),
-			copyError: clipboardError(store),
+			copyLocation: () => copyWithNotification(store, locationCopy.value),
+			copyUrl: () => copyWithNotification(store, url.value.toString()),
 
 			menuVisible,
 			menuElement,
+			menuList,
 			url,
 
 			locationLabel,
@@ -240,24 +242,40 @@ export default defineComponent({
 	#map-context-menu {
 		position: fixed;
 		z-index: 150;
-		min-width: 15rem;
-		max-width: 22.5rem;
+		min-width: 18rem;
+		max-width: 24rem;
 		top: 0;
 		left: 0;
 
 		ul {
-			background-color: var(--background-base);
+			background-color: rgba(22, 22, 26, 0.9);
+			-webkit-backdrop-filter: var(--glass-filter);
+			backdrop-filter: var(--glass-filter);
 			box-shadow: var(--box-shadow);
 			color: var(--text-base);
 			border-radius: var(--border-radius);
-			padding: 0.5rem;
+			padding: 0.6rem;
 			position: relative;
 			z-index: 1;
+			transform-origin: top left;
+		}
+
+		li > button {
+			font-size: 1.4rem;
+			padding: 0.9rem 1.2rem 0.8rem;
+
+			&.context-menu__location {
+				font-family: var(--font-pixel);
+				font-size: 1.4rem;
+				color: var(--text-emphasis);
+			}
 		}
 
 		::v-deep(.world) {
-			padding: 0.2rem 0 0.2rem 0.8rem;
+			padding: 0.4rem 0 0.2rem 1.2rem;
 			margin-bottom: 0;
+			margin-top: 0.4rem;
+			box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.06);
 
 			li {
 				width: 2.8rem;
@@ -266,7 +284,7 @@ export default defineComponent({
 		}
 
 		@media screen and (max-width: 767px) {
-			bottom: 0.5rem;
+			bottom: 0.8rem;
 			top: auto;
 			left: 0;
 			right: 0;
@@ -275,6 +293,10 @@ export default defineComponent({
 			max-width: 40rem;
 			overflow: auto;
 			transform: none !important;
+
+			ul {
+				transform-origin: bottom center;
+			}
 
 			&:before {
 				content: '';
@@ -287,6 +309,7 @@ export default defineComponent({
 				height: 40rem;
 				background-image: linear-gradient(0deg, var(--background-dark), transparent);
 				z-index: -1;
+				pointer-events: none;
 			}
 		}
 	}

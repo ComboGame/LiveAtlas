@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="utf-8">
 
@@ -8,159 +8,103 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <meta name="theme-color" content="#222222">
-	<link rel="manifest" href="/live-atlas/favicons/site.webmanifest">
-	<link rel="icon" href="/live-atlas/favicons/favicon.svg">
-    <link rel=”mask-icon” href="/live-atlas/favicons/mask.svg" color="#cccccc">
-    <link rel="apple-touch-icon" sizes="180x180" href="/live-atlas/favicons/apple-touch-icon.png">
+    <meta name="theme-color" content="#0E0E0E">
+    <meta name="color-scheme" content="dark">
+	<link rel="manifest" href="live-atlas/favicons/site.webmanifest">
+	<link rel="icon" type="image/svg+xml" href="live-atlas/favicons/favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="live-atlas/favicons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="live-atlas/favicons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="live-atlas/favicons/apple-touch-icon.png">
 
-    <meta name="keywords" content="minecraft, map, dynamic, liveatlas" />
-	<meta name="description" content="Minecraft Dynamic Map" />
+    <meta name="keywords" content="minecraft, map, schalker, squaremap, карта" />
+	<meta name="description" content="Живая карта мира сервера Schalker: постройки, территории и игроки онлайн." />
+	<meta name="robots" content="noindex" />
 
-    <title>Minecraft Dynamic Map - LiveAtlas</title>
-
-    <!-- Remove this if you are using the servers config below -->
-    <script src="./standalone/config.js"></script>
+    <title>Карта мира — Schalker</title>
 
     <script>
         window.liveAtlasConfig = {
-        	// By default LiveAtlas looks for a dynmap standalone/config.js file
-            // This configuration can be used instead to support Pl3xmap and Squaremap installations as well as multiple servers (external webserver required)
-            // To configure multiple servers, see https://github.com/JLyne/LiveAtlas/wiki/Configuring-Multiple-Servers.
+            // Карта Schalker работает на squaremap.
+            // Файлы LiveAtlas кладутся в веб-папку squaremap (plugins/squaremap/web) либо раздаются тем же
+            // веб-сервером, что и тайлы squaremap. Значение — путь, по которому доступна папка с tiles/.
+            servers: {
+              schalker: {
+                label: 'Schalker',
+                squaremap: window.location.pathname
+              },
+            },
 
-            // Example Squaremap internal webserver configuration
-            // servers: {
-            //   squaremap: {
-            // 	   squaremap: window.location.pathname
-            //   },
-            // },
+            // Другие варианты конфигурации (Dynmap, Pl3xmap, Overviewer, несколько серверов):
+            // https://github.com/JLyne/LiveAtlas/wiki/Configuring-Multiple-Servers
 
-            // Example Pl3xmap internal webserver configuration
-            // servers: {
-            //   pl3xmap: {
-            // 	   pl3xmap: window.location.pathname
-            //   },
-            // },
-
-            // Example Overviewer configuration
-            // servers: {
-            //   overviewer: {
-            // 	   overviewer: window.location.pathname
-            //   },
-            // },
-
-            // Example Dynmap internal webserver configuration without using standalone/config.js
-            // servers: {
-            //   dynmap: {
-            //     dynmap: {
-            //       configuration: 'standalone/dynmap_config.json?_={timestamp}',
-            //       update: 'standalone/dynmap_{world}.json?_={timestamp}',
-            //       sendmessage: 'standalone/sendmessage.php',
-            //       login: 'standalone/login.php',
-            //       register: 'standalone/register.php',
-            //       tiles: 'tiles/',
-            //       markers: 'tiles/'
-            //     }
-            //   },
-            // },
-
-            // Example multiple Dynmap servers on external webserver configuration
-            // servers: {
-            //   creative: {
-            //     label: 'Creative',
-            //     dynmap: {
-            //         configuration: 'http://dynmap.local/standalone/creative/MySQL_configuration.php',
-            //         update: 'http://dynmap.local/standalone/creative/MySQL_update.php?world={world}&ts={timestamp}',
-            //         sendmessage: 'http://dynmap.local/standalone/creative/MySQL_sendmessage.php',
-            //         login: 'http://dynmap.local/standalone/creative/MySQL_login.php',
-            //         register: 'http://dynmap.local/standalone/creative/MySQL_register.php',
-            //         tiles: 'http://dynmap.local/standalone/creative/MySQL_tiles.php?tile=',
-            //         markers: 'http://dynmap.local/standalone/creative/MySQL_markers.php?marker='
-            //     }
-            //   },
-            //   survival: {
-            //     label: 'Survival',
-            //     dynmap: {
-            //         configuration: 'http://dynmap.local/standalone/survival/MySQL_configuration.php',
-            //         update: 'http://dynmap.local/standalone/survival/MySQL_update.php?world={world}&ts={timestamp}',
-            //         sendmessage: 'http://dynmap.local/standalone/survival/MySQL_sendmessage.php',
-            //         login: 'http://dynmap.local/standalone/survival/MySQL_login.php',
-            //         register: 'http://dynmap.local/standalone/survival/MySQL_register.php',
-            //         tiles: 'http://dynmap.local/standalone/survival/MySQL_tiles.php?tile=',
-            //         markers: 'http://dynmap.local/standalone/survival/MySQL_markers.php?marker='
-			//     }
-            //   },
-            // },
-
-            // These messages are used throughout LiveAtlas and can be translated here
-            // If a message you want to translate isn't here, it is likely controlled by dynmap itself
-            // see https://github.com/webbukkit/dynmap/wiki/Configuration.txt
+            // Тексты интерфейса. Заголовки списков миров и игроков squaremap передаёт сам
+            // (ui.sidebar.world_list_label и player_list_label в его настройках/локали).
             messages: {
-            	chatNoMessages: 'No chat messages yet...',
-                chatTitle: 'Chat',
-                chatLogin: 'Please login to send chat messages',
-                chatSend: 'Send',
-                chatPlaceholder: 'Type your chat message here...',
-                chatErrorUnknown: 'Unexpected error while sending chat message',
-                chatErrorDisabled: 'Chat is not enabled',
-            	serversHeading: 'Servers',
-                markersHeading: 'Markers',
-                markersSearchPlaceholder: 'Search markers...',
-                markersSkeleton: 'No markers exist for the current world',
-                markersSetSkeleton: 'This marker set is empty',
-                markersSearchSkeleton: 'No matching markers found',
-                markersUnnamed: '(Unnamed marker)',
-                worldsSkeleton: 'No maps have been configured',
-                playersSkeleton: 'No players are currently online',
-                playersTitle: 'Click to center on player\nDouble-click to follow player',
-                playersTitleHidden: 'This player is currently hidden from the map\nDouble-click to follow player when they become visible',
-                playersTitleOtherWorld: 'This player is in another world.\nClick to center on player\nDouble-click to follow player',
-                playersSearchPlaceholder: 'Search players...',
-                playersSearchSkeleton: 'No matching players found',
-                followingHeading: 'Following',
-                followingUnfollow: 'Unfollow',
-                followingTitleUnfollow: 'Stop following this player',
-                followingHidden: 'Currently hidden',
-                linkTitle: 'Copy link to current location',
-                loadingTitle: 'Loading...',
-                locationRegion: 'Region',
-                locationChunk: 'Chunk',
-                contextMenuCopyLink: 'Copy link to here',
-                contextMenuCenterHere: 'Center here',
-                toggleTitle: 'Click to toggle this section',
-                mapTitle: 'Map - Use the arrow keys to pan the map',
-                layersTitle: 'Layers',
-                copyToClipboardSuccess: 'Copied to clipboard',
-                copyToClipboardError: 'Unable to copy to clipboard',
+                chatNoMessages: 'Сообщений в чате пока нет…',
+                chatTitle: 'Чат',
+                chatLogin: 'Войдите, чтобы писать в чат',
+                chatSend: 'Отправить',
+                chatPlaceholder: 'Напишите сообщение…',
+                chatErrorUnknown: 'Не удалось отправить сообщение',
+                chatErrorDisabled: 'Чат отключён',
+                serversHeading: 'Серверы',
+                markersHeading: 'Метки',
+                markersSearchPlaceholder: 'Поиск меток…',
+                markersSkeleton: 'В этом мире пока нет меток',
+                markersSetSkeleton: 'В этом наборе нет меток',
+                markersSearchSkeleton: 'Ничего не найдено',
+                markersUnnamed: '(Без названия)',
+                worldsSkeleton: 'Карты не настроены',
+                playersSkeleton: 'Сейчас никого нет онлайн',
+                playersTitle: 'Клик — показать игрока\nДвойной клик — следить за игроком',
+                playersTitleHidden: 'Игрок сейчас скрыт с карты\nДвойной клик — следить, когда появится',
+                playersTitleOtherWorld: 'Игрок в другом мире\nКлик — показать игрока\nДвойной клик — следить за игроком',
+                playersSearchPlaceholder: 'Поиск игроков…',
+                playersSearchSkeleton: 'Игроки не найдены',
+                followingHeading: 'Слежение',
+                followingUnfollow: 'Перестать следить',
+                followingTitleUnfollow: 'Перестать следить за игроком',
+                followingHidden: 'Сейчас скрыт',
+                linkTitle: 'Скопировать ссылку на это место',
+                loadingTitle: 'Загрузка…',
+                locationRegion: 'Регион',
+                locationChunk: 'Чанк',
+                contextMenuCopyLink: 'Скопировать ссылку сюда',
+                contextMenuCenterHere: 'Центрировать здесь',
+                toggleTitle: 'Свернуть или развернуть раздел',
+                mapTitle: 'Карта — стрелки на клавиатуре двигают карту',
+                layersTitle: 'Слои',
+                copyToClipboardSuccess: 'Скопировано',
+                copyToClipboardError: 'Не удалось скопировать',
 
-                loginTitle: 'Login/Register',
-                loginHeading: 'Existing User',
-                loginUsernameLabel: 'Username',
-                loginPasswordLabel: 'Password',
-                loginSubmit: 'Login',
-                loginErrorUnknown: 'Unexpected error while logging in',
-                loginErrorDisabled: 'Logging in is disabled on this server',
-                loginErrorIncorrect: 'Incorrect username or password',
-                loginSuccess: 'Logged in successfully',
+                loginTitle: 'Вход и регистрация',
+                loginHeading: 'Уже есть аккаунт',
+                loginUsernameLabel: 'Ник',
+                loginPasswordLabel: 'Пароль',
+                loginSubmit: 'Войти',
+                loginErrorUnknown: 'Не удалось войти',
+                loginErrorDisabled: 'Вход на этом сервере отключён',
+                loginErrorIncorrect: 'Неверный ник или пароль',
+                loginSuccess: 'Вы вошли',
 
-                registerHeading: 'New User',
-                registerDescription: `Enter your username and password, along with your registration code.
+                registerHeading: 'Новый аккаунт',
+                registerDescription: `Введите ник, пароль и код регистрации.
 
-                        You can get a registration code by running /dynmap webregister in-game.`,
-                registerConfirmPasswordLabel: 'Confirm Password',
-                registerCodeLabel: 'Registration Code',
-                registerSubmit: 'Register',
-                registerErrorUnknown: 'Unexpected error during registration',
-                registerErrorDisabled: 'Registration is disabled on this server',
-                registerErrorVerifyFailed: 'The entered passwords do not match',
-                registerErrorIncorrect: 'Registration failed, please check the entered details are correct',
+                        Код можно получить в игре командой /dynmap webregister.`,
+                registerConfirmPasswordLabel: 'Повторите пароль',
+                registerCodeLabel: 'Код регистрации',
+                registerSubmit: 'Зарегистрироваться',
+                registerErrorUnknown: 'Не удалось зарегистрироваться',
+                registerErrorDisabled: 'Регистрация на этом сервере отключена',
+                registerErrorVerifyFailed: 'Пароли не совпадают',
+                registerErrorIncorrect: 'Регистрация не удалась, проверьте введённые данные',
 
-                logoutTitle: 'Logout',
-                logoutErrorUnknown: 'Unexpected error while logging out',
-                logoutSuccess: 'Logged out successfully',
+                logoutTitle: 'Выйти',
+                logoutErrorUnknown: 'Не удалось выйти',
+                logoutSuccess: 'Вы вышли',
 
-                closeTitle: 'Close',
-                showMore: 'Show more'
+                closeTitle: 'Закрыть',
+                showMore: 'Показать ещё'
             },
 
             ui: {
@@ -181,7 +125,17 @@
 
                 // Custom URL to redirect to when logging in is required
                 // This URL will need to handle the login process and redirect users back to LiveAtlas
-                customLoginUrl: null
+                customLoginUrl: null,
+
+                // Плашка бренда в левом верхнем углу карты. null — скрыть.
+                brand: {
+                    name: 'Schalker',
+                    tagline: '#карта',
+                    url: 'https://schalker.net',
+                },
+
+                // Анимации интерфейса (Anime.js). При prefers-reduced-motion они отключаются автоматически.
+                animations: true,
             },
 
             // Config version. Do not modify.
@@ -190,39 +144,60 @@
     </script>
 
     <style>
-        /* Theme colours */
+        /* Цвета темы — те же токены, что на schalker.net */
         :root {
-            --background-base: #222222; /* Foreground UI elements */
-            --background-dark: #121212; /* Body/Splash screen/Shadows */
-            --background-light: #363636; /* Scrollbars/inputs */
-            --background-error: #771616; /* Errors */
-            --background-marker: var(--background-dark); /* Map markers */
+            --brand: #F44D89;
+            --brand-soft: #FF67B3;
+            --brand-light: #FFCDE1;
+            --brand-glow: rgba(244, 77, 137, 0.35);
 
-            --background-disabled: #555555; /* Disabled controls */
-            --background-hover: #363636; /* :hovered buttons/menu items */
-            --background-active: #6d6d6d; /* Button :active */
-            --background-selected: #BDBDBD; /* Selected buttons/menu items */
+            --background-base: rgba(20, 20, 24, 0.86); /* Стеклянные панели и кнопки */
+            --background-solid: #131217; /* Непрозрачная подложка (липкие заголовки) */
+            --background-dark: #0E0E0E; /* Фон страницы и заставки */
+            --background-light: #18181B; /* Поля ввода и полосы прокрутки */
+            --background-error: rgba(239, 68, 68, 0.16); /* Ошибки */
+            --background-marker: rgba(13, 11, 16, 0.86); /* Подписи меток на карте */
 
-            --outline-focus: #eeeeee; /* :focus outline */
+            --background-disabled: rgba(255, 255, 255, 0.04); /* Неактивные элементы */
+            --background-hover: rgba(255, 255, 255, 0.06); /* :hover */
+            --background-active: rgba(255, 255, 255, 0.1); /* :active */
+            --background-selected: rgba(244, 77, 137, 0.16); /* Выбранные пункты */
 
-            --border-radius: 0.5rem;
-            --border-color: #333333; /* Control borders */
-            --border-error: #cc0e0e;
-            --box-shadow: 2px 2px 0px #111111;
+            --glass-hover: rgba(36, 35, 42, 0.86); /* :hover отдельных стеклянных кнопок */
+            --glass-active: rgba(46, 44, 53, 0.9); /* :active отдельных стеклянных кнопок */
+            --glass-selected: rgba(70, 24, 46, 0.86); /* Нажатые отдельные кнопки */
 
-            --text-base: rgba(255, 255, 255, 0.7); /* Normal text */
-            --text-emphasis: rgba(255, 255, 255, 0.87); /* Chat messages/:focus inputs */
-            --text-subtle: rgba(255, 255, 255, 0.5); /* Skeletons/secondary text */
-            --text-disabled: var(--text-subtle); /* Disabled controls */
-            --text-marker: var(--text-base); /* Map markers */
+            --outline-focus: rgba(244, 77, 137, 0.6); /* Обводка фокуса */
 
-            --text-hover: var(--text-base); /* Text in :hover buttons */
-            --text-active: var(--text-base); /* Text in :active buttons */
-            --text-selected: var(--background-base); /* Text in selected buttons */
-            --text-shadow: 0.1rem 0.1rem #000000; /* Text in selected buttons */
+            --border-radius: 1.4rem;
+            --border-radius-small: 1rem;
+            --border-color: rgba(255, 255, 255, 0.1); /* Рамки панелей */
+            --border-strong: #3F3F46;
+            --border-error: #EF4444;
+            --box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9), 0 0 0 1px var(--border-color);
+            --glass-filter: blur(20px) saturate(150%);
 
-            --text-night: #ddffff; /* Clock time at night */
-            --text-day: #ffdd33; /* Clock time in day */
+            --text-base: #D4D4D8; /* Обычный текст */
+            --text-emphasis: #FFFFFF; /* Заголовки и сфокусированные поля */
+            --text-subtle: #8B8B94; /* Подсказки и второстепенный текст */
+            --text-disabled: #52525B; /* Неактивные элементы */
+            --text-marker: #FFFFFF; /* Подписи меток на карте */
+
+            --text-hover: #FFFFFF; /* Текст в :hover */
+            --text-active: #FFFFFF; /* Текст в :active */
+            --text-selected: var(--brand-soft); /* Текст выбранных пунктов */
+            --text-shadow: none;
+
+            --text-night: #C4B5FD; /* Время ночью */
+            --text-day: #F7C58B; /* Время днём */
+
+            --state-ok: #10B981;
+            --state-warn: #F59E0B;
+            --state-danger: #EF4444;
+
+            --font-body: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            --font-heading: 'Noto Sans Variable', 'Noto Sans', var(--font-body);
+            --font-pixel: Monocraft, ui-monospace, 'Cascadia Mono', Consolas, monospace;
         }
 
         @keyframes fade {
@@ -235,17 +210,35 @@
             }
         }
 
+        @keyframes splash-loader {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(250%);
+            }
+        }
+
+        @keyframes splash-fallback {
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
         * {
             scrollbar-width: thin;
-            scrollbar-color: var(--background-light) transparent;
+            scrollbar-color: #2B2B30 transparent;
         }
 
         *:hover, *:focus-within {
-            scrollbar-color: var(--background-hover) transparent;
+            scrollbar-color: #3A3A40 transparent;
         }
 
         *::-webkit-scrollbar {
-            width: 0.7rem;
+            width: 0.6rem;
+            height: 0.6rem;
         }
 
         *::-webkit-scrollbar-track {
@@ -253,19 +246,20 @@
         }
 
         *::-webkit-scrollbar-thumb {
-            background-color: var(--background-light);
-            border: 2px solid #000000;
+            background-color: #2B2B30;
             border-radius: 2rem;
-            transition: background 1s ease-in;
-            padding-right: 0.2rem;
         }
 
         *:hover::-webkit-scrollbar-thumb, *:focus-within::-webkit-scrollbar-thumb {
-          background-color: var(--background-hover);
+            background-color: #3A3A40;
         }
 
         *::-webkit-scrollbar-button {
             display: none;
+        }
+
+        ::selection {
+            background: rgba(255, 103, 179, 0.38);
         }
 
         html, body {
@@ -279,22 +273,15 @@
 
         html {
             font-size: 62.5%;
+            color-scheme: dark;
         }
 
         body {
-            font-family: Raleway,
-            system-ui,
-            -apple-system,
-            'Segoe UI',
-            Roboto,
-            Helvetica,
-            Arial,
-            sans-serif,
-            'Apple Color Emoji',
-            'Segoe UI Emoji';
+            font-family: var(--font-body);
             color: var(--text-base);
             text-shadow: var(--text-shadow);
-            letter-spacing: 0.02rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         noscript {
@@ -307,12 +294,8 @@
 
         #splash, noscript {
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            transition: 0.3s opacity linear;
-            z-index: 100;
+            inset: 0;
+            z-index: 115; /* Над боковой панелью (110), под модальными окнами (120) */
             background-color: var(--background-dark);
             cursor: wait;
             display: flex;
@@ -321,46 +304,166 @@
             justify-content: center;
             font-size: 1.6rem;
             padding: 4rem;
-        }
-
-        #splash:after {
-            color: var(--text-subtle);
-            content: '3.0.0-beta.2';
-            font-family: monospace;
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
+            overflow: hidden;
+            transition: 0.3s opacity linear;
         }
 
         #splash[hidden] {
             display: none;
         }
 
+        /* Раскрытие карты «диафрагмой» при скрытии заставки (переменную анимирует Anime.js) */
+        #splash.splash--revealing {
+            --reveal: 0%;
+            transition: none;
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent var(--reveal), #000 calc(var(--reveal) + 6%));
+            mask-image: radial-gradient(circle at 50% 50%, transparent var(--reveal), #000 calc(var(--reveal) + 6%));
+        }
+
+        /* Фон как .page-aurora на сайте: розово-синее свечение и сетка */
+        .splash__aurora {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(52% 70% at 50% 38%, rgba(244, 77, 137, 0.16), transparent 68%),
+                radial-gradient(46% 60% at 8% 0%, rgba(59, 130, 246, 0.08), transparent 72%),
+                radial-gradient(42% 60% at 96% 100%, rgba(255, 103, 179, 0.08), transparent 74%);
+        }
+
+        .splash__aurora::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.45;
+            background-image:
+                linear-gradient(to right, rgba(63, 63, 70, 0.5) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(63, 63, 70, 0.5) 1px, transparent 1px);
+            background-size: 72px 72px;
+            background-position: center;
+            -webkit-mask-image: radial-gradient(48% 52% at 50% 45%, #000, transparent 76%);
+            mask-image: radial-gradient(48% 52% at 50% 45%, #000, transparent 76%);
+        }
+
+        .splash__content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #splash__logo {
+            width: 9.6rem;
+            height: 9.6rem;
+            overflow: visible;
+            filter: drop-shadow(0 18px 40px rgba(244, 77, 137, 0.28));
+        }
+
+        .splash__title {
+            margin-top: 2.4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .splash__name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 4rem;
+            letter-spacing: -0.02em;
+            color: var(--brand);
+        }
+
+        .splash__tagline {
+            margin-top: 0.8rem;
+            font-size: 1.5rem;
+            color: var(--brand-light);
+        }
+
+        /* До запуска скрипта блоки логотипа и подпись скрыты; если JS задерживается — показываются через CSS */
+        #splash:not(.splash--animated) [data-block],
+        #splash:not(.splash--animated) .splash__title > *,
+        #splash:not(.splash--animated) #splash__spinner {
+            opacity: 0;
+            animation: splash-fallback 0.3s ease-out 1s forwards;
+        }
+
+        #splash [data-block] {
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
         #splash__spinner {
-            margin-top: 4rem;
-            animation: fade 0.5s linear 1s;
-            animation-fill-mode: both;
+            position: relative;
+            margin-top: 3.2rem;
+            width: 16rem;
+            height: 0.3rem;
+            border-radius: 1rem;
+            background-color: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+
+        #splash__spinner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            width: 40%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, transparent, var(--brand), var(--brand-soft), transparent);
+            animation: splash-loader 1.3s cubic-bezier(.4, 0, .2, 1) infinite;
+        }
+
+        .splash__version {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            color: var(--text-subtle);
+            font-family: var(--font-pixel);
+            font-size: 1.2rem;
         }
 
         #splash__error {
-            margin-top: 2rem;
+            margin-top: 2.4rem;
             transition: opacity 0.5s ease-in;
             display: flex;
             flex-direction: column;
             text-align: center;
             max-width: 60rem;
+            gap: 1rem;
         }
 
         #splash__error-message {
-            font-family: monospace;
+            font-family: var(--font-pixel);
+            font-size: 1.3rem;
+            line-height: 1.5;
+            color: #FCA5A5;
             background-color: var(--background-error);
-            padding: 1rem 1.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 1.2rem 1.6rem;
             border-radius: var(--border-radius);
-            margin-bottom: 1rem;
+        }
+
+        #splash__error-retry {
+            color: var(--text-subtle);
+            font-size: 1.3rem;
         }
 
         #splash__error[aria-hidden=true] {
             opacity: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #splash:not(.splash--animated) [data-block],
+            #splash:not(.splash--animated) .splash__title > *,
+            #splash:not(.splash--animated) #splash__spinner {
+                opacity: 1;
+                animation: none;
+            }
+
+            #splash__spinner::after {
+                animation-duration: 3s;
+            }
         }
 
         #app {
@@ -371,28 +474,34 @@
   </head>
   <body>
     <div id="splash">
-        <svg id="splash__logo" width="200" height="200" viewBox="0 0 268.83 266.53" aria-hidden="true" fill="rgba(255, 255, 255, 0.7)">
-            <path d="M5.235.662C2.153.606 0 2.945 0 6.912v216.577c0 5.288 3.828 11.41 8.582 13.725l57.835 28.165c4.755 2.316 8.582-.078 8.582-5.367V43.434c0-5.288-3.827-11.41-8.582-13.727L8.582 1.544C7.394.965 6.262.681 5.235.662zm32.283 135.96c14.394 0 26.062 11.669 26.062 26.063 0 14.394-24.167 59.55-26.062 57.654-1.854 1.854-26.063-43.26-26.063-57.654 0-14.394 11.669-26.063 26.063-26.063zM202.388 1.013l57.833 28.165c4.755 2.315 8.583 8.437 8.583 13.726v216.58c0 5.29-3.828 7.683-8.583 5.367l-57.833-28.164c-4.755-2.316-8.583-8.438-8.583-13.727V6.38c0-5.289 3.828-7.682 8.583-5.367zM172.012.39c-1.051-.035-2.209.191-3.426.709l-68.342 29.053c-4.867 2.07-8.786 7.993-8.786 13.282V260.01c0 5.29 3.919 7.88 8.786 5.811l68.342-29.053c4.867-2.07 8.786-7.991 8.786-13.28V6.91c0-3.967-2.204-6.417-5.36-6.521zm-36.949 41.216c14.394 0 26.063 11.668 26.063 26.062 0 14.394-24.168 59.55-26.063 57.655C133.209 127.177 109 82.063 109 67.668c0-14.394 11.669-26.062 26.063-26.062z"/>
-            <path d="M48.573 162.689a11.056 11.056 0 0 1-11.056 11.056 11.056 11.056 0 0 1-11.056-11.056 11.056 11.056 0 0 1 11.056-11.056 11.056 11.056 0 0 1 11.056 11.056zM146.12 67.669a11.056 11.056 0 0 1-11.057 11.056 11.056 11.056 0 0 1-11.056-11.056 11.056 11.056 0 0 1 11.056-11.056 11.056 11.056 0 0 1 11.056 11.056z"/>
-        </svg>
+        <div class="splash__aurora" aria-hidden="true"></div>
 
-        <svg id="splash__spinner" width="38" height="38" viewBox="0 0 38 38" stroke="#fff" aria-label="LiveAtlas is loading">
-            <g transform="translate(1 1)" stroke-width="2" fill="none">
-                <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
-                <path d="M36 18c0-9.94-8.06-18-18-18">
-                    <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"/>
-                </path>
-            </g>
-        </svg>
+        <div class="splash__content">
+            <svg id="splash__logo" viewBox="176 176 528 528" aria-hidden="true">
+                <path data-block="arch" fill="#F44E8A" d="M201 255H679Q697 255 697 273V539Q697 549 687 549H588Q578 549 578 539V448Q578 420 550 420H330Q302 420 302 448V539Q302 549 292 549H193Q183 549 183 539V273Q183 255 201 255Z"/>
+                <rect data-block="top" fill="#FD70A9" x="259" y="184" width="361" height="155" rx="18"/>
+                <path data-block="base" fill="#F32A80" d="M206 589H673Q679 589 679 595V675Q679 697 657 697H222Q200 697 200 675V595Q200 589 206 589Z"/>
+                <rect data-block="core" fill="#F6588F" x="342" y="460" width="195" height="168" rx="16"/>
+            </svg>
 
-        <div id="splash__error" aria-hidden="true">
-            <span id="splash__error-message" role="alert"></span>
-            <span id="splash__error-retry" aria-live="polite"></span>
+            <div class="splash__title">
+                <span class="splash__name">Schalker</span>
+                <span class="splash__tagline">карта мира</span>
+            </div>
+
+            <div id="splash__spinner" role="progressbar" aria-label="Карта загружается"></div>
+
+            <div id="splash__error" aria-hidden="true">
+                <span id="splash__error-message" role="alert"></span>
+                <span id="splash__error-retry" aria-live="polite"></span>
+            </div>
         </div>
+
+        <span class="splash__version" aria-hidden="true"></span>
     </div>
 
     <noscript>
-        <strong>LiveAtlas requires JavaScript to work.<br />Please enable it to continue.</strong>
+        <strong>Для работы карты нужен JavaScript.<br />Включите его, чтобы продолжить.</strong>
     </noscript>
 
     <main id="app" aria-hidden="true"></main>
@@ -402,7 +511,7 @@
         window.addEventListener('load', () => {
             if(!window.liveAtlasLoaded) {
                 document.getElementById('splash__error').setAttribute('aria-hidden', 'false');
-                document.getElementById('splash__error-message').innerText = 'Required LiveAtlas files are missing or failed to load.\nPlease reinstall LiveAtlas.';
+                document.getElementById('splash__error-message').innerText = 'Файлы карты отсутствуют или не загрузились.\nПереустановите LiveAtlas.';
                 document.getElementById('splash__spinner').style.visibility = 'hidden';
             }
         });

@@ -32,7 +32,7 @@ import {
 	LiveAtlasChat,
 	LiveAtlasUIModal,
 	LiveAtlasSidebarSectionState,
-	LiveAtlasMarker, LiveAtlasMapViewTarget
+	LiveAtlasMarker, LiveAtlasMapViewTarget, LiveAtlasBrandConfig
 } from "@/index";
 import {
 	DynmapMarkerUpdate,
@@ -89,6 +89,8 @@ export type State = {
 		disableContextMenu: boolean;
 		disableMarkerUI: boolean;
 		customLoginUrl: string | null;
+		brand: LiveAtlasBrandConfig | null;
+		animations: boolean;
 
 		screenWidth: number;
 		screenHeight: number;
@@ -106,7 +108,7 @@ export type State = {
 }
 
 export const state: State = {
-	version: (process.env.VITE_APP_VERSION || 'Unknown') as string,
+	version: (import.meta.env.VITE_APP_VERSION || 'Unknown') as string,
 	firstLoad: true,
 	initialTitle: document.title,
 
@@ -233,6 +235,8 @@ export const state: State = {
 		disableContextMenu: false,
 		disableMarkerUI: false,
 		customLoginUrl: null,
+		brand: null,
+		animations: true,
 
 		screenWidth: window.innerWidth,
 		screenHeight: window.innerHeight,

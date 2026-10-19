@@ -56,6 +56,6 @@ export default defineComponent({
 	}
 
 	::v-deep(.section__search) {
-		top: 9rem;
+		top: 9.2rem;
 	}
 </style>

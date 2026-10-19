@@ -31,11 +31,12 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, onUnmounted, computed, ref} from "vue";
+import {defineComponent, onMounted, onUnmounted, computed, ref, watch, nextTick} from "vue";
 import {LiveAtlasUIModal} from "@/index";
 import {useStore} from "@/store";
 import {MutationTypes} from "@/store/mutation-types";
 import SvgIcon from "@/components/SvgIcon.vue";
+import {animateModalIn} from "@/util/motion";
 
 export default defineComponent({
 	components: {SvgIcon},
@@ -75,6 +76,8 @@ export default defineComponent({
 
 		const close = () => props.closeable && store.commit(MutationTypes.HIDE_UI_MODAL, props.id as LiveAtlasUIModal);
 
+		watch(visible, value => value && nextTick(() => modal.value && animateModalIn(modal.value)));
+
 		onMounted(() => {
 			window.addEventListener('keydown', onKeydown);
 		});
@@ -94,7 +97,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-	@import '../scss/placeholders';
+	@use '../scss/placeholders' as *;
 
 	.modal {
 		position: fixed;
@@ -114,7 +117,9 @@ export default defineComponent({
 
 		&.modal--backdrop {
 			pointer-events: auto;
-			background-color: rgba(0, 0, 0, 0.8);
+			background-color: rgba(7, 6, 10, 0.72);
+			-webkit-backdrop-filter: blur(6px);
+			backdrop-filter: blur(6px);
 		}
 
 		&.modal--visible {
@@ -127,33 +132,45 @@ export default defineComponent({
 			max-width: 80rem;
 			box-sizing: border-box;
 			width: 100%;
-			padding: 2rem;
+			padding: 2.4rem;
 			pointer-events: auto;
+			background-color: rgba(22, 22, 26, 0.92);
 		}
 
 		.modal__header {
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: 0;
 			position: relative;
-			padding: 2rem 3rem 0;
+			padding: 2.4rem 4rem 0;
 			text-align: center;
 			box-shadow: none;
+
+			h2 {
+				font-size: 2.4rem;
+				line-height: 1.2;
+				font-weight: 800;
+			}
 		}
 
 		.modal__close {
 			position: absolute;
-			top: 0;
-			right: 0;
+			top: 1.2rem;
+			right: 1.2rem;
 			padding: 1rem;
-			width: 3.5rem;
-            height: 3.5rem;
+			width: 3.6rem;
+			height: 3.6rem;
 			display: block;
-			border-top-left-radius: 0;
-			border-bottom-right-radius: 0;
+			border-radius: 50%;
+			background-color: var(--background-hover);
+
+			&:hover {
+				background-color: var(--brand);
+				color: #fff;
+			}
 
 			.svg-icon {
-				width: 1.5rem !important;
-				height: 1.5rem !important;
+				width: 1.3rem !important;
+				height: 1.3rem !important;
 			}
 		}
 

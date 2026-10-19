@@ -28,6 +28,7 @@
 			<LinkControl v-if="linkControlEnabled" :leaflet="leaflet"></LinkControl>
 			<ClockControl v-if="clockControlEnabled" :leaflet="leaflet"></ClockControl>
 
+			<BrandControl v-if="brand" :brand="brand" :leaflet="leaflet"></BrandControl>
 			<LoginControl v-if="loginEnabled" :leaflet="leaflet"></LoginControl>
 			<ChatControl v-if="chatBoxEnabled" :leaflet="leaflet"></ChatControl>
 		</template>
@@ -37,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import {computed, ref, defineComponent} from "vue";
+import {computed, ref, shallowRef, defineComponent} from "vue";
 import {CRS, LatLng, LatLngBounds, PanOptions, ZoomPanOptions} from 'leaflet';
 import {LiveAtlasLocation, LiveAtlasPlayer, LiveAtlasMapViewTarget} from "@/index";
 import {useStore} from '@/store';
@@ -55,10 +56,13 @@ import {LoadingControl} from "@/leaflet/control/LoadingControl";
 import MapContextMenu from "@/components/map/MapContextMenu.vue";
 import LoginControl from "@/components/map/control/LoginControl.vue";
 import TileLayerOverlay from "@/components/map/layer/TileLayerOverlay.vue";
+import BrandControl from "@/components/map/control/BrandControl.vue";
+import {pingLocation, playMapTransition} from "@/util/motion";
 
 export default defineComponent({
 	components: {
 		TileLayerOverlay,
+		BrandControl,
 		MapContextMenu,
 		TileLayer,
 		PlayersLayer,
@@ -73,7 +77,8 @@ export default defineComponent({
 
 	setup() {
 		const store = useStore(),
-			leaflet = undefined as any,
+			//shallowRef: the template must re-render once leaflet is created in mounted(), without making leaflet itself reactive
+			leaflet = shallowRef<LiveAtlasLeafletMap | undefined>(undefined) as any,
 
 			maps = computed(() => store.state.maps),
 			overlays = computed(() => store.state.currentMap?.overlays),
@@ -99,6 +104,11 @@ export default defineComponent({
 
 			//Location and zoom to pan to upon next projection change
 			scheduledView = ref<LiveAtlasMapViewTarget|null>(null),
+
+			//Whether to highlight the destination of the next completed setView with a ping animation
+			pendingPing = ref(false),
+
+			brand = computed(() => store.state.ui.brand),
 
 			mapTitle = computed(() => store.state.messages.mapTitle);
 
@@ -127,6 +137,8 @@ export default defineComponent({
 			currentMap,
 
 			scheduledView,
+			pendingPing,
+			brand,
 
 			mapTitle
 		}
@@ -149,6 +161,7 @@ export default defineComponent({
 						useStore().commit(MutationTypes.CLEAR_VIEW_TARGET, undefined);
 					}
 
+					this.pendingPing = true;
 					this.setView(newValue);
 				}
 			},
@@ -162,6 +175,10 @@ export default defineComponent({
 
 				if(this.leaflet) {
 					let viewTarget = this.scheduledView;
+
+					if(oldValue) {
+						playMapTransition(this.leaflet.getContainer());
+					}
 
 					if(!viewTarget && oldValue) {
 						viewTarget = {location: oldValue.latLngToLocation(this.leaflet.getCenter(), 64) as LiveAtlasLocation};
@@ -306,13 +323,14 @@ export default defineComponent({
 			}
 
 			if(!targetWorld) {
+				this.pendingPing = false;
 				console.warn(`Ignoring setView with unknown world ${target.location.world}`);
 				return;
 			}
 
 			if(targetWorld && (targetWorld !== currentWorld) || (target.map && currentMap !== target.map)) {
 				const map = store.state.maps.get(`${targetWorld.name}_${target.map}`),
-					mapName = map ? map.name : targetWorld.maps.values().next().value.name;
+					mapName = map ? map.name : targetWorld.maps.values().next().value!.name;
 
 				this.scheduledView = target;
 
@@ -329,14 +347,24 @@ export default defineComponent({
 					this.leaflet!.setZoom(target.zoom, target.options as ZoomPanOptions);
 				}
 
+				let destination: LatLng;
+
 				if('min' in target.location) { // Bounds
-					this.leaflet!.fitBounds(new LatLngBounds(
+					const bounds = new LatLngBounds(
 						store.state.currentMap?.locationToLatLng(target.location.min) as LatLng,
 						store.state.currentMap?.locationToLatLng(target.location.max) as LatLng,
-					), target.options);
+					);
+
+					destination = bounds.getCenter();
+					this.leaflet!.fitBounds(bounds, target.options);
 				} else { // Location
-					const location = store.state.currentMap?.locationToLatLng(target.location) as LatLng;
-					this.leaflet!.panTo(location, target.options as PanOptions);
+					destination = store.state.currentMap?.locationToLatLng(target.location) as LatLng;
+					this.leaflet!.panTo(destination, target.options as PanOptions);
+				}
+
+				if(this.pendingPing) {
+					this.pendingPing = false;
+					pingLocation(this.leaflet, destination);
 				}
 			}
 		},
@@ -366,7 +394,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-	@import '../scss/_mixins.scss';
+	@use '../scss/mixins' as *;
 
 	.map {
 		width: 100%;
@@ -385,6 +413,7 @@ export default defineComponent({
 			bottom: 0;
 			left: 0;
 			border: 0.2rem solid var(--outline-focus);
+			border-radius: 0.4rem;
 			display: block;
 			z-index: 2000;
 			pointer-events: none;

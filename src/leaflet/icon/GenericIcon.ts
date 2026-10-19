@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {PointExpression, Icon, DomUtil, point, BaseIconOptions, PointTuple, Layer, LayerOptions, Util} from 'leaflet';
+import {PointExpression, Icon, point, BaseIconOptions, PointTuple, Layer, LayerOptions, Util} from 'leaflet';
 
 export interface GenericIconOptions extends BaseIconOptions {
 	iconUrl: string;
@@ -51,7 +51,6 @@ const defaultOptions: GenericIconOptions = {
 
 export class GenericIcon extends Layer implements Icon<GenericIconOptions> {
 	declare options: GenericIconOptions;
-	declare createShadow: (oldIcon?: HTMLElement) => HTMLElement;
 
 	private _image?: HTMLImageElement;
 	private _label?: HTMLSpanElement;
@@ -64,6 +63,11 @@ export class GenericIcon extends Layer implements Icon<GenericIconOptions> {
 	constructor(options: GenericIconOptions) {
 		super(options as LayerOptions);
 		Util.setOptions(this, Object.assign(defaultOptions, options));
+	}
+
+	// Leaflet 1.9 always calls createShadow when adding a marker; LiveAtlas markers have no shadows
+	createShadow(): HTMLElement {
+		return null as unknown as HTMLElement;
 	}
 
 	createIcon(oldIcon: HTMLElement) {

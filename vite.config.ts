@@ -1,52 +1,37 @@
 // noinspection JSUnusedGlobalSymbols
 
-import {defineConfig, loadEnv} from 'vite';
-import { resolve } from 'path';
+import {defineConfig} from 'vitest/config';
+import {resolve} from 'node:path';
 import vue from '@vitejs/plugin-vue';
-import svgSpritePlugin from "vite-plugin-svg-sprite-component";
-import analyze from 'rollup-plugin-analyzer';
-import { splitVendorChunkPlugin } from 'vite'
+import svgSprite from './build/svgSprite.ts';
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd())
-
-  // expose .env as process.env instead of import.meta since jest does not import meta yet
-  const envWithProcessPrefix = Object.entries(env).reduce(
-    (prev, [key, val]) => {
-      return {
-        ...prev,
-        ['process.env.' + key]: `"${val}"`,
-      }
-    },
-    {},
-  );
-
-  return {
-    plugins: [splitVendorChunkPlugin(), vue(), analyze(), svgSpritePlugin({
-      symbolId: (name) => `icon--${name}`,
-      removeAttrs: ['xmlns', 'width', 'height', 'version']
-    })],
-    base: './',
-    server: {
-    host: '0.0.0.0',
-      port: 8080
-    },
-    resolve: {
-      alias: [
-        {
-          find: '@',
-          replacement: resolve(__dirname, 'src')
-        }
-      ]
-    },
-    build: {
-      chunkSizeWarningLimit: 600,
-      assetsDir: 'live-atlas/assets'
-    },
-    define: envWithProcessPrefix,
-    test: {
-      globals: true,
-      environment: 'jsdom',
-    },
-  }
+export default defineConfig({
+	plugins: [
+		vue(),
+		svgSprite({
+			symbolId: (name) => `icon--${name}`,
+		}),
+	],
+	base: './',
+	server: {
+		host: '0.0.0.0',
+		port: 8080,
+	},
+	resolve: {
+		alias: [
+			{
+				find: '@',
+				replacement: resolve(import.meta.dirname, 'src'),
+			},
+		],
+	},
+	build: {
+		target: 'es2022',
+		chunkSizeWarningLimit: 600,
+		assetsDir: 'live-atlas/assets',
+	},
+	test: {
+		globals: true,
+		environment: 'jsdom',
+	},
 });
