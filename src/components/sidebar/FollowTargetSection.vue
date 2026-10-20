@@ -146,7 +146,7 @@ export default defineComponent({
 				background-color: var(--background-hover);
 
 				&:hover {
-					background-color: var(--brand);
+					background-color: rgba(255, 255, 255, 0.12);
 					color: #fff;
 				}
 
@@ -170,7 +170,7 @@ export default defineComponent({
 				margin-right: 1.4rem;
 				grid-area: icon;
 				border-radius: 1rem;
-				box-shadow: 0 0 0 0.2rem var(--brand), 0 0 2rem -0.4rem var(--brand-glow);
+				box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
 			}
 
 			.target__name {
@@ -191,7 +191,7 @@ export default defineComponent({
 				font-family: var(--font-pixel);
 				font-size: 1.3rem;
 				font-weight: 400;
-				color: var(--brand-soft);
+				color: var(--text-base);
 				cursor: pointer;
 				text-align: left;
 				background-color: transparent;
@@ -200,7 +200,7 @@ export default defineComponent({
 				justify-self: start;
 
 				&:hover {
-					color: var(--brand-light);
+					color: var(--text-emphasis);
 					background-color: transparent;
 				}
 			}

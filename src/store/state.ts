@@ -32,7 +32,7 @@ import {
 	LiveAtlasChat,
 	LiveAtlasUIModal,
 	LiveAtlasSidebarSectionState,
-	LiveAtlasMarker, LiveAtlasMapViewTarget, LiveAtlasBrandConfig
+	LiveAtlasMarker, LiveAtlasMapViewTarget
 } from "@/index";
 import {
 	DynmapMarkerUpdate,
@@ -89,8 +89,9 @@ export type State = {
 		disableContextMenu: boolean;
 		disableMarkerUI: boolean;
 		customLoginUrl: string | null;
-		brand: LiveAtlasBrandConfig | null;
 		animations: boolean;
+		playerHeadsUrl: string | null;
+		worldNames: Record<string, string>;
 
 		screenWidth: number;
 		screenHeight: number;
@@ -235,8 +236,9 @@ export const state: State = {
 		disableContextMenu: false,
 		disableMarkerUI: false,
 		customLoginUrl: null,
-		brand: null,
 		animations: true,
+		playerHeadsUrl: null,
+		worldNames: {},
 
 		screenWidth: window.innerWidth,
 		screenHeight: window.innerHeight,

@@ -144,14 +144,16 @@ export const mutations: MutationTree<State> & Mutations = {
 			state.ui.customLoginUrl = config.customLoginUrl;
 		}
 
-		if(config.brand && typeof config.brand.name === 'string' && config.brand.name) {
-			state.ui.brand = Object.freeze({...config.brand});
-		} else if(config.brand === null) {
-			state.ui.brand = null;
-		}
-
 		if(typeof config.animations === 'boolean') {
 			state.ui.animations = config.animations;
+		}
+
+		if(typeof config.playerHeadsUrl === 'string' && config.playerHeadsUrl) {
+			state.ui.playerHeadsUrl = config.playerHeadsUrl;
+		}
+
+		if(config.worldNames && typeof config.worldNames === 'object') {
+			state.ui.worldNames = Object.freeze({...config.worldNames});
 		}
 	},
 

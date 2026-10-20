@@ -115,6 +115,22 @@ export const getDefaultPlayerImage = () => {
 }
 
 /**
+ * Builds a player head URL from the ui.playerHeadsUrl template
+ * Supported placeholders: {uuid}, {name} and {size} (pixel size, doubled for high density screens)
+ * @param {string} template The URL template
+ * @param {PlayerImageQueueEntry} entry The queued image
+ * @returns The URL
+ */
+export const getPlayerHeadsUrl = (template: string, entry: PlayerImageQueueEntry) => {
+	const size = Math.min(getImagePixelSize(entry.size) * 2, 64);
+
+	return template
+		.replace(/{uuid}/g, encodeURIComponent(entry.uuid || ''))
+		.replace(/{name}/g, encodeURIComponent(entry.name))
+		.replace(/{size}/g, size.toString());
+}
+
+/**
  * Ticks the player image load queue, starting additional image loads if any are queued and the concurrent load limit
  * hasn't been hit
  */
@@ -125,8 +141,11 @@ const tickPlayerImageQueue = () => {
 
 	const image = playerImageQueue.pop() as PlayerImageQueueEntry;
 
+	const store = useStore(),
+		headsUrl = store.state.ui.playerHeadsUrl;
+
 	playerImagesLoading.add(image.cacheKey);
-	image.image.src = useStore().state.components.players.imageUrl(image);
+	image.image.src = headsUrl ? getPlayerHeadsUrl(headsUrl, image) : store.state.components.players.imageUrl(image);
 
 	tickPlayerImageQueue();
 }

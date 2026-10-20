@@ -1,6 +1,8 @@
 /*
  * Слой анимаций интерфейса на Anime.js v4.
  *
+ * Меню справа (боковая панель) намеренно не анимируются.
+ *
  * Правила (как на schalker.net):
  *  - анимируются только transform, opacity и CSS-переменные; после завершения inline-стили снимаются,
  *    чтобы не плодить слои и не мешать Leaflet, который сам управляет transform у карты и маркеров;
@@ -10,7 +12,6 @@
 
 import {animate, createTimeline, scrambleText, spring, stagger, utils, type AnimationParams, type JSAnimation} from 'animejs';
 import {DivIcon, LatLng, Marker} from 'leaflet';
-import type {Directive} from 'vue';
 import {useStore} from '@/store';
 import type LiveAtlasLeafletMap from '@/leaflet/LiveAtlasLeafletMap';
 
@@ -204,8 +205,7 @@ export const playUIEntrance = () => {
 	const left = Array.from(document.querySelectorAll<HTMLElement>('.leaflet-top.leaflet-left > .leaflet-control:not([hidden])')),
 		bottom = Array.from(document.querySelectorAll<HTMLElement>('.leaflet-bottom > .leaflet-control, .leaflet-top.leaflet-center > *')),
 		buttons = Array.from(document.querySelectorAll<HTMLElement>('.sidebar__buttons > button')),
-		sections = Array.from(document.querySelectorAll<HTMLElement>('.sidebar__section:not([hidden])')),
-		all = [...left, ...bottom, ...buttons, ...sections];
+		all = [...left, ...bottom, ...buttons];
 
 	if(!all.length) {
 		return;
@@ -221,138 +221,11 @@ export const playUIEntrance = () => {
 	const groups: [HTMLElement[], AnimationParams, number][] = [
 		[left, {opacity: [0, 1], translateX: [-28, 0], delay: stagger(55)}, 0],
 		[buttons, {opacity: [0, 1], translateY: [-24, 0], scale: [0.8, 1], delay: stagger(60, {reversed: true})}, 80],
-		[sections, {opacity: [0, 1], translateX: [32, 0], delay: stagger(70)}, 180],
 		[bottom, {opacity: [0, 1], translateY: [28, 0], delay: stagger(60)}, 220],
 	];
 
 	groups.filter(([targets]) => targets.length)
 		.forEach(([targets, params, position]) => timeline.add(targets, params, position));
-};
-
-/* ------------------------------------------------------------------ */
-/* Разделы боковой панели                                              */
-/* ------------------------------------------------------------------ */
-
-const sectionItemsSelector = [
-	'.section__content .menu > label',
-	'.section__content .world',
-	'.section__content .section__search',
-	'.section__content .markers__header',
-	'.following__target',
-].join(', ');
-
-/**
- * Animates a sidebar section into view, staggering in its first few list items
- * @param {HTMLElement} el The section element
- */
-export const animateSectionIn = (el: HTMLElement) => {
-	el.hidden = false;
-
-	if(!motionEnabled()) {
-		clearStyles(el);
-		return;
-	}
-
-	const items = Array.from(el.querySelectorAll<HTMLElement>(sectionItemsSelector)).slice(0, 18);
-
-	track(el, animate(el, {
-		opacity: [0, 1],
-		translateX: [28, 0],
-		scale: [0.97, 1],
-		ease: softSpring(),
-		onComplete: () => clearStyles(el),
-	}));
-
-	if(items.length) {
-		animate(items, {
-			opacity: [0, 1],
-			translateX: [14, 0],
-			duration: 380,
-			delay: stagger(22, {start: 60}),
-			ease: 'outCubic',
-			onComplete: () => clearStyles(items),
-		});
-	}
-};
-
-/**
- * Animates a sidebar section out of view, setting the hidden attribute once complete
- * @param {HTMLElement} el The section element
- */
-export const animateSectionOut = (el: HTMLElement) => {
-	if(!motionEnabled() || el.hidden) {
-		runningAnimations.get(el)?.cancel();
-		clearStyles(el);
-		el.hidden = true;
-		return;
-	}
-
-	track(el, animate(el, {
-		opacity: 0,
-		translateX: 18,
-		duration: 170,
-		ease: 'inQuad',
-		onComplete: () => {
-			el.hidden = true;
-			clearStyles(el);
-		},
-	}));
-};
-
-/**
- * Directive which toggles the hidden attribute of an element with enter/leave animations
- * Usage: v-motion-hidden="!visible"
- */
-export const vMotionHidden: Directive<HTMLElement, boolean> = {
-	mounted(el, {value}) {
-		el.hidden = value;
-
-		// Sections mounted while the splash screen is visible are animated by playUIEntrance instead
-		if(!value && document.getElementById('splash')?.hidden) {
-			animateSectionIn(el);
-		}
-	},
-
-	updated(el, {value, oldValue}) {
-		if(value === oldValue) {
-			return;
-		}
-
-		if(value) {
-			animateSectionOut(el);
-		} else {
-			animateSectionIn(el);
-		}
-	},
-};
-
-/**
- * Animates the collapsing or expanding of a sidebar section's content
- * @param {HTMLElement} content The content element
- * @param {boolean} collapse Whether the content is collapsing
- * @returns Promise resolved once the animation completes
- */
-export const animateCollapse = (content: HTMLElement, collapse: boolean): Promise<void> => {
-	if(!motionEnabled()) {
-		return Promise.resolve();
-	}
-
-	const height = content.scrollHeight;
-
-	content.style.overflow = 'hidden';
-
-	return new Promise(resolve => {
-		track(content, animate(content, {
-			height: collapse ? [height, 0] : [0, height],
-			opacity: collapse ? [1, 0] : [0, 1],
-			duration: collapse ? 220 : 320,
-			ease: collapse ? 'inOutQuad' : 'outCubic',
-			onComplete: () => {
-				clearStyles(content, ['height', 'opacity', 'overflow']);
-				resolve();
-			},
-		}));
-	});
 };
 
 /* ------------------------------------------------------------------ */
@@ -537,50 +410,4 @@ export const popInMarker = (label: HTMLElement) => {
 		ease: popSpring(),
 		onComplete: () => clearStyles(label),
 	});
-};
-
-/* ------------------------------------------------------------------ */
-/* Бренд                                                               */
-/* ------------------------------------------------------------------ */
-
-/**
- * Re-stacks the blocks of the Schalker logo one after another, used on hover of the brand control
- * @param {Element} logo The logo svg
- */
-export const bounceLogo = (logo: Element | null) => {
-	if(!logo || !motionEnabled()) {
-		return;
-	}
-
-	const blocks = Array.from(logo.querySelectorAll<SVGElement>('[data-block]'));
-
-	if(!blocks.length || runningAnimations.has(logo)) {
-		return;
-	}
-
-	runningAnimations.set(logo, animate(blocks, {
-		translateY: [0, -46, 0],
-		duration: 520,
-		delay: stagger(70, {reversed: true}),
-		ease: 'outQuad',
-		onComplete: () => {
-			clearStyles(blocks);
-			runningAnimations.delete(logo);
-		},
-	}));
-};
-
-/**
- * Scrambles the text of an element into place using Minecraft-like block characters
- * @param {HTMLElement} el The element
- */
-export const scrambleIn = (el: HTMLElement | null) => {
-	if(!el || !motionEnabled()) {
-		return;
-	}
-
-	track(el, animate(el, {
-		textContent: scrambleText({chars: 'blocks', settleDuration: 220}),
-		duration: 600,
-	}));
 };

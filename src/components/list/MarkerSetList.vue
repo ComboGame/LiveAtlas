@@ -148,7 +148,7 @@ export default defineComponent({
 
 		.marker-set__count {
 			flex: 0 0 auto;
-			min-width: 2.4rem;
+			min-width: 2.2rem;
 			padding: 0.2rem 0.7rem;
 			border-radius: 2rem;
 			font-size: 1.2rem;
@@ -159,37 +159,36 @@ export default defineComponent({
 		}
 	}
 
-	input:checked + .marker-set .marker-set__count {
-		color: var(--brand-light);
-		background-color: rgba(244, 77, 137, 0.2);
-	}
-
-	.markers__back {
-		width: 3.2rem;
-		height: 3.2rem;
-		flex-grow: 0;
-		flex-shrink: 0;
-		margin-right: 1rem;
-		transform: rotate(90deg);
-		border-radius: 50%;
-		background-color: var(--background-hover);
-
-		&:hover {
-			background-color: var(--brand);
-			color: #fff;
-		}
-	}
-
 	.markers__header {
 		display: flex;
 		align-items: center;
-		padding-bottom: 1rem;
+		gap: 1rem;
 		position: sticky;
 		top: 5rem;
-		background-color: rgba(20, 20, 24, 0.6);
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px);
 		z-index: 3;
+		margin: 0 -0.5rem 0.8rem;
+		padding: 0.2rem 0.5rem 0.8rem;
+		background-color: var(--background-panel);
+		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+	}
+
+	.markers__back {
+		flex: 0 0 auto;
+		width: 3rem;
+		height: 3rem;
+		padding: 0;
+		transform: rotate(90deg);
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.06);
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.12);
+		}
+
+		::v-deep(.svg-icon) {
+			width: 1.2rem !important;
+			height: 1.2rem !important;
+		}
 	}
 
 	.markers__set {
@@ -199,7 +198,10 @@ export default defineComponent({
 		text-overflow: ellipsis;
 		overflow: hidden;
 		margin: 0;
+		font-family: var(--font-body);
 		font-size: 1.5rem;
-		color: var(--brand-light);
+		font-weight: 600;
+		letter-spacing: 0;
+		color: var(--text-emphasis);
 	}
 </style>

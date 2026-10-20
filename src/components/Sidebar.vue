@@ -41,11 +41,11 @@
 			</button>
 		</header>
 		<div class="sidebar__content" @keydown="handleSidebarKeydown">
-			<ServersSection v-if="serverCount > 1" v-motion-hidden="!mapsVisible"></ServersSection>
-			<WorldsSection v-if="mapCount > 1" v-motion-hidden="!mapsVisible"></WorldsSection>
-			<MarkersSection v-if="previouslyVisible.has('markers')" v-motion-hidden="!markersVisible"></MarkersSection>
-			<PlayersSection v-if="playerMakersEnabled && previouslyVisible.has('players')" v-motion-hidden="!playersVisible"></PlayersSection>
-			<FollowTargetSection v-if="following" v-motion-hidden="!followVisible" :target="following"></FollowTargetSection>
+			<ServersSection v-if="serverCount > 1" :hidden="!mapsVisible"></ServersSection>
+			<WorldsSection v-if="mapCount > 1" :hidden="!mapsVisible"></WorldsSection>
+			<MarkersSection v-if="previouslyVisible.has('markers')" :hidden="!markersVisible"></MarkersSection>
+			<PlayersSection v-if="playerMakersEnabled && previouslyVisible.has('players')" :hidden="!playersVisible"></PlayersSection>
+			<FollowTargetSection v-if="following" :hidden="!followVisible" :target="following"></FollowTargetSection>
 		</div>
 	</section>
 </template>
@@ -63,17 +63,12 @@ import MarkersSection from "@/components/sidebar/MarkersSection.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import {handleKeyboardEvent} from "@/util/events";
 import {focus} from "@/util";
-import {vMotionHidden} from "@/util/motion";
 import "@/assets/icons/players.svg";
 import "@/assets/icons/maps.svg";
 import "@/assets/icons/servers.svg";
 import "@/assets/icons/marker_point.svg";
 
 export default defineComponent({
-	directives: {
-		motionHidden: vMotionHidden,
-	},
-
 	components: {
 		MarkersSection,
 		WorldsSection,
@@ -238,7 +233,7 @@ export default defineComponent({
 
 			&[aria-expanded="true"] {
 				background-color: var(--glass-selected);
-				box-shadow: var(--box-shadow), inset 0 0 0 1px rgba(244, 77, 137, 0.45), 0 0 2rem -0.6rem var(--brand-glow);
+				box-shadow: var(--box-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 			}
 
 			& + button {

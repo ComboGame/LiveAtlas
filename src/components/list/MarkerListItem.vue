@@ -19,8 +19,10 @@
 	<label :for="`marker-${id}`" class="marker" :title="marker.tooltip" @click.prevent="pan">
 		<img width="16" height="16" v-if="icon" class="marker__icon" :src="icon" alt="" />
 		<SvgIcon v-else :name="defaultIcon" class="marker__icon"></SvgIcon>
-		<span class="marker__label">{{ marker.tooltip || messageUnnamed }}</span>
-		<span class="marker__location">X: {{ location.x }}, Z: {{ location.z }}</span>
+		<span class="marker__text">
+			<span class="marker__label">{{ marker.tooltip || messageUnnamed }}</span>
+			<span class="marker__location">X: {{ location.x }}, Z: {{ location.z }}</span>
+		</span>
 	</label>
 </template>
 
@@ -106,27 +108,39 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 	input[type=radio] + .marker {
-		padding-left: 3.9rem;
+		display: flex;
+		align-items: center;
+		gap: 1.2rem;
+		padding: 0.8rem 1rem;
+		white-space: normal;
 
 		.marker__icon {
-			max-width: 1.6rem;
-			position: absolute;
-			top: 0;
-			left: 0.8rem;
-			bottom: 0;
-			margin: auto;
+			flex: 0 0 auto;
+			width: 1.6rem;
+			height: 1.6rem;
+			max-width: none;
+			position: static;
+			margin: 0;
+		}
+
+		.marker__text {
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+			min-width: 0;
 		}
 
 		.marker__label {
 			display: block;
 			overflow: hidden;
 			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		.marker__location {
 			display: block;
-			margin-top: 0.2rem;
 			font-size: 1.15rem;
+			line-height: 1.2;
 			font-family: var(--font-pixel);
 			font-weight: 400;
 			color: var(--text-subtle);

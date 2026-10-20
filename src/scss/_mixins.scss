@@ -87,7 +87,7 @@
 @mixin button-pressed {
 	background-color: var(--background-selected);
 	color: var(--text-selected);
-	box-shadow: inset 0 0 0 1px rgba(244, 77, 137, 0.35);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 	font-weight: 600;
 	text-shadow: none;
 }

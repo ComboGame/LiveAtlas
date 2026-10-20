@@ -52,3 +52,21 @@ describe('debounce', () => {
 		expect(fn).not.toHaveBeenCalled();
 	});
 });
+
+describe('getPlayerHeadsUrl', () => {
+	it('fills placeholders and doubles the size for high density screens', async () => {
+		const {getPlayerHeadsUrl} = await import('../src/util/images');
+		const url = getPlayerHeadsUrl('https://example.com/head?uuid={uuid}&name={name}&size={size}', {
+			cacheKey: 'x', name: 'Kensey', uuid: 'abc-123', size: 'small', image: new Image(),
+		});
+
+		expect(url).toBe('https://example.com/head?uuid=abc-123&name=Kensey&size=32');
+	});
+
+	it('leaves uuid empty when unknown', async () => {
+		const {getPlayerHeadsUrl} = await import('../src/util/images');
+		const url = getPlayerHeadsUrl('{uuid}|{name}|{size}', {cacheKey: 'x', name: 'a', size: 'large', image: new Image()});
+
+		expect(url).toBe('|a|64');
+	});
+});

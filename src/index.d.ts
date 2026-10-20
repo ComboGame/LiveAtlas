@@ -126,15 +126,9 @@ interface LiveAtlasUIConfig {
 	disableContextMenu: boolean;
 	disableMarkerUI: boolean;
 	customLoginUrl: string | null;
-	brand?: LiveAtlasBrandConfig | null;
 	animations?: boolean;
-}
-
-interface LiveAtlasBrandConfig {
-	name: string;
-	tagline?: string;
-	url?: string;
-	logo?: string;
+	playerHeadsUrl?: string | null;
+	worldNames?: Record<string, string>;
 }
 
 export type LiveAtlasUIElement = 'layers' | 'chat' | LiveAtlasSidebarSection;

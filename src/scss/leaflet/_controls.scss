@@ -17,6 +17,75 @@
 @use "../mixins" as *;
 @use "../placeholders" as *;
 
+/*
+ * Сброс оформления из leaflet/dist/leaflet.css. Форк Leaflet, который раньше использовал LiveAtlas, эти стили
+ * вырезал; у официального пакета они есть и перебивают наши (белые кнопки, 30px зум в режиме .leaflet-touch,
+ * PNG-иконка слоёв, отступы 10px). Селекторы повторяют специфичность исходных правил.
+ */
+.leaflet-top .leaflet-control,
+.leaflet-bottom .leaflet-control,
+.leaflet-left .leaflet-control,
+.leaflet-right .leaflet-control {
+	margin-top: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 0;
+	float: none;
+	clear: none;
+}
+
+.leaflet-touch .leaflet-bar,
+.leaflet-touch .leaflet-control-layers {
+	border: none;
+	background-clip: border-box;
+	box-shadow: var(--box-shadow);
+}
+
+.leaflet-control-layers {
+	background: var(--background-base);
+	border-radius: var(--border-radius);
+	box-shadow: var(--box-shadow);
+}
+
+.leaflet-touch .leaflet-bar a,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-touch .leaflet-control-zoom-in,
+.leaflet-touch .leaflet-control-zoom-out {
+	width: var(--ui-button-size);
+	height: var(--ui-button-size);
+	line-height: 0;
+	font-size: 0;
+	text-indent: 0;
+}
+
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
+}
+
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
+}
+
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: var(--background-hover);
+}
+
+.leaflet-control-layers-toggle,
+.leaflet-retina .leaflet-control-layers-toggle,
+.leaflet-touch .leaflet-control-layers-toggle {
+	background-image: none;
+	width: var(--ui-button-size);
+	height: var(--ui-button-size);
+}
+
+.leaflet-container a {
+	-webkit-tap-highlight-color: transparent;
+}
+
 .leaflet-control {
 	@include glass;
 	border-radius: var(--border-radius);
@@ -61,7 +130,7 @@
 
 	&[aria-expanded=true] {
 		background-color: var(--glass-selected);
-		box-shadow: var(--box-shadow), inset 0 0 0 1px rgba(244, 77, 137, 0.45), 0 0 2rem -0.6rem var(--brand-glow);
+		box-shadow: var(--box-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 	}
 }
 
@@ -123,13 +192,34 @@
 	flex-shrink: 0;
 
 	a {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-family: var(--font-body);
-		font-size: 2.4rem;
-		font-weight: 300;
-		line-height: 1;
+		position: relative;
+		font-size: 0;
+		line-height: 0;
+
+		span {
+			display: none;
+		}
+
+		&:before,
+		&:after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: 1.4rem;
+			height: 0.2rem;
+			margin: -0.1rem 0 0 -0.7rem;
+			border-radius: 0.2rem;
+			background-color: currentColor;
+		}
+
+		&.leaflet-control-zoom-in:after {
+			transform: rotate(90deg);
+		}
+
+		&.leaflet-control-zoom-out:after {
+			content: none;
+		}
 	}
 }
 

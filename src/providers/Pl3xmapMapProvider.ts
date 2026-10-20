@@ -114,11 +114,18 @@ export default class Pl3xmapMapProvider extends MapProvider {
 		this.worldMarkerUpdateIntervals.clear();
 		this.worldPlayerUpdateIntervals.clear();
 
-		const filteredWorlds = (serverResponse.worlds || []).filter((w: any) => w && !!w.name)
-			.sort((a: any, b: any) => a.order - b.order);
+		//Same order value: overworld, nether, end, then custom worlds
+		const typeOrder = (type: string) => ['normal', 'nether', 'the_end'].indexOf(type) + 1 || 4,
+			filteredWorlds = (serverResponse.worlds || []).filter((w: any) => w && !!w.name)
+				.sort((a: any, b: any) => (a.order - b.order) || (typeOrder(a.type) - typeOrder(b.type)));
 
-		filteredWorlds.forEach((world: any, index: number) => {
-			const worldResponse = worldResponses[index],
+		//Keep world responses aligned with the sorted worlds
+		const responsesByName = new Map<string, any>();
+		(serverResponse.worlds || []).filter((w: any) => w && !!w.name)
+			.forEach((w: any, i: number) => responsesByName.set(w.name, worldResponses[i]));
+
+		filteredWorlds.forEach((world: any) => {
+			const worldResponse = responsesByName.get(world.name),
 				worldConfig: {components: LiveAtlasPartialComponentConfig } = {
 					components: {
 						players: {
@@ -176,7 +183,7 @@ export default class Pl3xmapMapProvider extends MapProvider {
 
 			const w = {
 				name: world.name || '(Unnamed world)',
-				displayName: world.display_name || world.name,
+				displayName: this.getWorldDisplayName(world),
 				dimension,
 				seaLevel: 0,
 				maps,
@@ -187,7 +194,7 @@ export default class Pl3xmapMapProvider extends MapProvider {
 
 				name: 'flat',
 				displayName: 'Flat',
-				icon: world.icon ? `${this.config}images/icon/${world.icon}.png` : undefined,
+				icon: world.icon ? `${this.config}images/icon/${world.icon}.png` : Pl3xmapMapProvider.getDefaultWorldIcon(world.type),
 
 				baseUrl: `${this.config}tiles/${w.name}/`,
 				imageFormat: 'png',
@@ -209,6 +216,57 @@ export default class Pl3xmapMapProvider extends MapProvider {
 		});
 
 		return Array.from(worlds.values());
+	}
+
+	/**
+	 * Returns a readable name for the given world
+	 * Uses ui.worldNames from the LiveAtlas config if it contains the world, otherwise the squaremap display name.
+	 * Display names which are just a world identifier (e.g. minecraft:overworld) are replaced with a name for the
+	 * world type
+	 */
+	private getWorldDisplayName(world: any): string {
+		const names = this.store.state.ui.worldNames,
+			displayName: string = world.display_name || world.name || '',
+			candidates = [displayName, world.name, (world.name || '').replace('_', ':')];
+
+		for(const candidate of candidates) {
+			if(candidate && names[candidate]) {
+				return names[candidate];
+			}
+		}
+
+		if(!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(displayName) && displayName !== world.name) {
+			return displayName;
+		}
+
+		switch(world.type) {
+			case 'normal':
+				return 'Обычный мир';
+			case 'nether':
+				return 'Незер';
+			case 'the_end':
+				return 'Энд';
+			default: {
+				const id = displayName.split(':').pop() || displayName;
+				return id.charAt(0).toUpperCase() + id.slice(1).replace(/_/g, ' ');
+			}
+		}
+	}
+
+	/**
+	 * Returns the built-in LiveAtlas icon for a world of the given squaremap type
+	 */
+	private static getDefaultWorldIcon(type: string): string {
+		switch(type) {
+			case 'normal':
+				return 'liveatlas_block_world_surface';
+			case 'nether':
+				return 'liveatlas_block_nether_surface';
+			case 'the_end':
+				return 'liveatlas_block_the_end_surface';
+			default:
+				return 'liveatlas_block_other';
+		}
 	}
 
 	private static buildComponents(response: any): LiveAtlasComponentConfig {

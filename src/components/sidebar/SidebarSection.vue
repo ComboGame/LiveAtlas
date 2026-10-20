@@ -18,7 +18,7 @@
 	<section :class="{
 		'sidebar__section': true,
 		'section--collapsible': collapsible,
-		'section--collapsed': displayCollapsed
+		'section--collapsed': collapsed
 	}" :data-section="name">
 		<h2 class="section__heading">
 			<button :id="`${name}-heading`" type="button"
@@ -30,20 +30,19 @@
 				<SvgIcon v-if="collapsible" name="arrow" :class="{'section__arrow--collapsed': collapsed}"></SvgIcon>
 			</button>
 		</h2>
-		<div ref="content" :id="`${name}-content`" class="section__content" :aria-hidden="collapsed">
+		<div :id="`${name}-content`" class="section__content" :aria-hidden="collapsed">
 			<slot></slot>
 		</div>
 	</section>
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, nextTick, ref, watch} from "vue";
+import {defineComponent, computed} from "vue";
 import {LiveAtlasSidebarSection} from "@/index";
 import {useStore} from "@/store";
 import SvgIcon from "@/components/SvgIcon.vue";
 import '@/assets/icons/arrow.svg';
 import {MutationTypes} from "@/store/mutation-types";
-import {animateCollapse} from "@/util/motion";
 
 export default defineComponent({
 	name: 'SidebarSection',
@@ -64,30 +63,7 @@ export default defineComponent({
 		const store = useStore(),
 			title = computed(() => store.state.messages.toggleTitle),
 			collapsed = computed(() => store.state.ui.sidebar[props.name].collapsed),
-			smallScreen = computed(() => store.state.ui.smallScreen),
-			content = ref<HTMLElement | null>(null),
-
-			//Collapsed state applied to the DOM, which lags behind the store while the collapse animation plays
-			displayCollapsed = ref(collapsed.value);
-
-		watch(collapsed, async (value) => {
-			if(!content.value) {
-				displayCollapsed.value = value;
-				return;
-			}
-
-			if(value) {
-				await animateCollapse(content.value, true);
-
-				if(collapsed.value) {
-					displayCollapsed.value = true;
-				}
-			} else {
-				displayCollapsed.value = false;
-				await nextTick();
-				await animateCollapse(content.value, false);
-			}
-		});
+			smallScreen = computed(() => store.state.ui.smallScreen);
 
 		const toggle = () => {
 			if(!props.collapsible) {
@@ -99,9 +75,7 @@ export default defineComponent({
 
 		return {
 			title,
-			content,
 			collapsed,
-			displayCollapsed,
 			smallScreen,
 			toggle,
 		}
@@ -120,6 +94,7 @@ export default defineComponent({
 		max-width: 28rem;
 		flex: 0 0 auto;
 		padding: 1.4rem;
+		background-color: rgba(20, 20, 24, 0.96);
 
 		&[hidden] {
 			display: none;
@@ -135,9 +110,7 @@ export default defineComponent({
 			z-index: 3;
 			border-radius: inherit;
 			margin: -1.4rem -1.4rem 0;
-			background-color: rgba(20, 20, 24, 0.6);
-			-webkit-backdrop-filter: blur(12px);
-			backdrop-filter: blur(12px);
+			background-color: var(--background-panel);
 
 			&, button {
 				padding: 1.4rem;
@@ -180,12 +153,12 @@ export default defineComponent({
 				}
 
 				&:hover .svg-icon {
-					color: var(--brand-soft);
+					color: var(--text-emphasis);
 				}
 			}
 
 			&:hover, &:focus-visible, &.focus-visible, &:active {
-				background-color: rgba(20, 20, 24, 0.6);
+				background-color: var(--background-panel);
 			}
 		}
 

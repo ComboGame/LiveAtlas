@@ -28,7 +28,6 @@
 			<LinkControl v-if="linkControlEnabled" :leaflet="leaflet"></LinkControl>
 			<ClockControl v-if="clockControlEnabled" :leaflet="leaflet"></ClockControl>
 
-			<BrandControl v-if="brand" :brand="brand" :leaflet="leaflet"></BrandControl>
 			<LoginControl v-if="loginEnabled" :leaflet="leaflet"></LoginControl>
 			<ChatControl v-if="chatBoxEnabled" :leaflet="leaflet"></ChatControl>
 		</template>
@@ -56,13 +55,11 @@ import {LoadingControl} from "@/leaflet/control/LoadingControl";
 import MapContextMenu from "@/components/map/MapContextMenu.vue";
 import LoginControl from "@/components/map/control/LoginControl.vue";
 import TileLayerOverlay from "@/components/map/layer/TileLayerOverlay.vue";
-import BrandControl from "@/components/map/control/BrandControl.vue";
 import {pingLocation, playMapTransition} from "@/util/motion";
 
 export default defineComponent({
 	components: {
 		TileLayerOverlay,
-		BrandControl,
 		MapContextMenu,
 		TileLayer,
 		PlayersLayer,
@@ -108,7 +105,6 @@ export default defineComponent({
 			//Whether to highlight the destination of the next completed setView with a ping animation
 			pendingPing = ref(false),
 
-			brand = computed(() => store.state.ui.brand),
 
 			mapTitle = computed(() => store.state.messages.mapTitle);
 
@@ -138,7 +134,6 @@ export default defineComponent({
 
 			scheduledView,
 			pendingPing,
-			brand,
 
 			mapTitle
 		}

@@ -127,15 +127,21 @@
                 // This URL will need to handle the login process and redirect users back to LiveAtlas
                 customLoginUrl: null,
 
-                // Плашка бренда в левом верхнем углу карты. null — скрыть.
-                brand: {
-                    name: 'Schalker',
-                    tagline: '#карта',
-                    url: 'https://schalker.net',
-                },
-
                 // Анимации интерфейса (Anime.js). При prefers-reduced-motion они отключаются автоматически.
                 animations: true,
+
+                // Откуда брать головы игроков. Сайт отдаёт их из скинов SkinsRestorer.
+                // Подстановки: {uuid}, {name}, {size}. null — использовать heads-url из конфига squaremap.
+                playerHeadsUrl: 'https://schalker.net/api/skins/head?uuid={uuid}&name={name}&size={size}',
+
+                // Названия миров в списке. Ключ — идентификатор мира из squaremap (как в адресе карты,
+                // через «:» или «_»). Миры без названия здесь получают его по типу: Обычный мир, Незер, Энд.
+                worldNames: {
+                    'minecraft:overworld': 'Обычный мир',
+                    'minecraft:the_nether': 'Незер',
+                    'minecraft:the_end': 'Энд',
+                    'schalker:clanwar': 'Мир клановых войн',
+                },
             },
 
             // Config version. Do not modify.
@@ -161,11 +167,12 @@
             --background-disabled: rgba(255, 255, 255, 0.04); /* Неактивные элементы */
             --background-hover: rgba(255, 255, 255, 0.06); /* :hover */
             --background-active: rgba(255, 255, 255, 0.1); /* :active */
-            --background-selected: rgba(244, 77, 137, 0.16); /* Выбранные пункты */
+            --background-selected: rgba(255, 255, 255, 0.08); /* Выбранные пункты */
+            --background-panel: rgb(20, 20, 24); /* Боковые панели и их липкие заголовки */
 
             --glass-hover: rgba(36, 35, 42, 0.86); /* :hover отдельных стеклянных кнопок */
             --glass-active: rgba(46, 44, 53, 0.9); /* :active отдельных стеклянных кнопок */
-            --glass-selected: rgba(70, 24, 46, 0.86); /* Нажатые отдельные кнопки */
+            --glass-selected: rgba(46, 46, 54, 0.92); /* Нажатые отдельные кнопки */
 
             --outline-focus: rgba(244, 77, 137, 0.6); /* Обводка фокуса */
 
@@ -185,7 +192,7 @@
 
             --text-hover: #FFFFFF; /* Текст в :hover */
             --text-active: #FFFFFF; /* Текст в :active */
-            --text-selected: var(--brand-soft); /* Текст выбранных пунктов */
+            --text-selected: #FFFFFF; /* Текст выбранных пунктов */
             --text-shadow: none;
 
             --text-night: #C4B5FD; /* Время ночью */

@@ -10,7 +10,7 @@
 
 ### Установка на сервер
 
-1. `npm ci && npm run build`
+1. `npm ci`, затем `npm run build` (в Windows PowerShell 5.1 нет `&&`: запускайте по очереди или через `;`)
 2. Скопировать содержимое `dist/` в веб-папку squaremap (`plugins/squaremap/web/`), рядом с папкой `tiles/`.
    В `plugins/squaremap/config.yml` выключить перезапись веб-файлов: `settings.web-directory.auto-update: false`.
    Если карту раздаёт nginx, кладите `dist/` в корень сайта, где доступен `tiles/`.

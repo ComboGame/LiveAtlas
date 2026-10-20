@@ -21,7 +21,8 @@
                  :aria-labelledby="`${name}-${maps[0].world.name}-${maps[0].name}-label`">
       <label :id="`${name}-${maps[0].world.name}-${maps[0].name}-label`"
              :for="`${name}-${maps[0].world.name}-${maps[0].name}`" class="world-single">
-        <span class="world__dimension" :data-dimension="maps[0].world.dimension" aria-hidden="true"></span>
+        <img v-if="maps[0].hasCustomIcon()" class="world__icon" :src="maps[0].getIcon()" alt="" />
+        <SvgIcon v-else class="world__icon" :name="maps[0].getIcon()"></SvgIcon>
         <span class="world__label">{{ maps[0].world.displayName }}</span>
       </label>
     </template>
@@ -122,24 +123,10 @@ export default defineComponent({
 		}
 	}
 
-	/* Цвет измерения: верхний мир, Незер, Энд */
-	.world__dimension {
+	.world__icon {
 		flex: 0 0 auto;
-		width: 0.8rem;
-		height: 0.8rem;
-		border-radius: 0.2rem;
-		background-color: #4ADE80;
-		box-shadow: 0 0 0.8rem rgba(74, 222, 128, 0.5);
-
-		&[data-dimension=nether] {
-			background-color: #F87171;
-			box-shadow: 0 0 0.8rem rgba(248, 113, 113, 0.5);
-		}
-
-		&[data-dimension=end] {
-			background-color: #C084FC;
-			box-shadow: 0 0 0.8rem rgba(192, 132, 252, 0.5);
-		}
+		width: 1.8rem !important;
+		height: 1.8rem !important;
 	}
 
 	.world {
